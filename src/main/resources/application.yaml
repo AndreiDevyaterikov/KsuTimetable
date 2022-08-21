@@ -1,0 +1,4 @@
+springdoc:
+  swagger-ui:
+    path: /ksu-timetable-api.html
+
