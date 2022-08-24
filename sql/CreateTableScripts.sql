@@ -36,6 +36,7 @@ create table if not exists users(
 
 create table if not exists timetable(
     lesson_id varchar primary key,
+    lesson_name varchar not null,
     lesson_day integer not null,
     lesson_number integer not null,
     lesson_type varchar not null,
