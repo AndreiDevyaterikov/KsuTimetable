@@ -1,13 +1,13 @@
 create table if not exists buildings(
-                          build_id VARCHAR PRIMARY KEY,
-                          build_name VARCHAR NOT NULL
+                          building_id VARCHAR PRIMARY KEY,
+                          building_name VARCHAR NOT NULL
 );
 
 create table if not exists cabinets(
     cabinet_id VARCHAR PRIMARY KEY,
     cabinet_name VARCHAR NOT NULL,
     build_id VARCHAR (25),
-    constraint FK_build_id FOREIGN KEY (build_id) REFERENCES buildings(build_id)
+    constraint FK_build_id FOREIGN KEY (build_id) REFERENCES buildings(building_id)
 );
 
 create table if not exists faculties(
@@ -28,3 +28,37 @@ create table if not exists groups(
     direction_id varchar,
     constraint FK_direction_id foreign key (direction_id) references directions(direction_id)
 );
+
+create table if not exists users(
+    user_id varchar primary key,
+    user_name varchar not null
+);
+
+create table if not exists timetable(
+    lesson_id varchar primary key,
+    lesson_day integer not null,
+    lesson_number integer not null,
+    lesson_type varchar not null,
+    lesson_time_start varchar not null,
+    lesson_time_end varchar not null,
+    cabinet_id varchar not null,
+    teacher_id varchar not null,
+    group_id varchar not null,
+    subgroup varchar,
+
+    constraint FK_cabinet_id foreign key (cabinet_id) references cabinets(cabinet_id),
+    constraint FK_teacher_id foreign key (teacher_id) references users(user_id),
+    constraint FK_group_id foreign key (group_id) references groups(group_id)
+);
+
+create table if not exists logbook(
+    log_id integer primary key,
+    status varchar not null,
+    time_changed timestamp not null,
+    week_day integer not null,
+    cabinet_id varchar not null,
+    teacher_id varchar not null,
+
+    constraint FK_cabinet_id foreign key (cabinet_id) references cabinets(cabinet_id),
+    constraint FK_teacher_id foreign key (teacher_id) references users(user_id)
+)

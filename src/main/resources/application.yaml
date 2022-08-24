@@ -1,4 +1,10 @@
 springdoc:
   swagger-ui:
     path: /ksu-timetable-api.html
-
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema="public"
+    username: postgres
+    password: root
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
