@@ -24,4 +24,16 @@ public class MapperService {
         }
         return list;
     }
+
+
+    public <T> String mapModelToJsonString(T requestModel){
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json;
+        try {
+            json = objectMapper.writeValueAsString(requestModel);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return json;
+    }
 }
