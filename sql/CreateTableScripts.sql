@@ -6,8 +6,8 @@ create table if not exists buildings(
 create table if not exists cabinets(
     cabinet_id VARCHAR PRIMARY KEY,
     cabinet_name VARCHAR NOT NULL,
-    build_id VARCHAR (25),
-    constraint FK_build_id FOREIGN KEY (build_id) REFERENCES buildings(building_id)
+    building_id VARCHAR (25),
+    constraint FK_build_id FOREIGN KEY (building_id) REFERENCES buildings(building_id)
 );
 
 create table if not exists faculties(
