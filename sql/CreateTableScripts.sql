@@ -58,7 +58,7 @@ create table if not exists logbook(
     time_changed timestamp not null,
     week_day integer not null,
     cabinet_id varchar not null,
-    teacher_id varchar not null,
+    teacher_id varchar,
 
     constraint FK_cabinet_id foreign key (cabinet_id) references cabinets(cabinet_id),
     constraint FK_teacher_id foreign key (teacher_id) references users(user_id)
