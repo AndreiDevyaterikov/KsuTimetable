@@ -24,16 +24,15 @@ public class MapperService {
         }
         return list;
     }
+    public  <T> String mapListToJsonString(List<T> list){
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString;
 
-
-    public <T> String mapModelToJsonString(T requestModel){
-        ObjectMapper objectMapper = new ObjectMapper();
-        String json;
         try {
-            json = objectMapper.writeValueAsString(requestModel);
+            jsonString = mapper.writeValueAsString(list);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        return json;
+        return jsonString;
     }
 }
