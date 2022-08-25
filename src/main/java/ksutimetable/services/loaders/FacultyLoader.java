@@ -1,7 +1,7 @@
 package ksutimetable.services.loaders;
 
-import ksutimetable.entities.Building;
-import ksutimetable.repositories.BuildingRepository;
+import ksutimetable.entities.Faculty;
+import ksutimetable.repositories.FacultyRepository;
 import ksutimetable.services.MapperService;
 import ksutimetable.services.RequestService;
 import lombok.AllArgsConstructor;
@@ -13,22 +13,22 @@ import org.springframework.util.MultiValueMap;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class BuildingLoader implements LoaderService {
-
-    private final BuildingRepository buildingRepository;
+public class FacultyLoader implements LoaderService{
     private final RequestService requestService;
     private final MapperService mapperService;
+    private final FacultyRepository facultyRepository;
+
+
     @Override
     public void loadData() {
-
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
-        requestParams.add("action", "getbuildings");
-        var response = requestService.doPost(requestParams);
-        var buildings = mapperService.mapResponseToList(Building.class, response);
-        var jsonStringBuildings = mapperService.mapListToJsonString(buildings);
+        requestParams.add("action", "getfaculties");
 
-        log.info("Loading buildings to database...");
-        buildingRepository.saveBuldings(jsonStringBuildings);
-        log.info("Buildings has been loaded");
+        var response = requestService.doPost(requestParams);
+        var faculties = mapperService.mapResponseToList(Faculty.class, response);
+
+        log.info("Loading faculties to database...");
+        facultyRepository.saveAll(faculties);
+        log.info("Faculties has been loaded");
     }
 }

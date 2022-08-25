@@ -19,6 +19,6 @@ public interface CabinetRepository extends JpaRepository<Cabinet, String> {
     @Modifying
     @Transactional
     @Query(value = "CALL add_cabinet (:cabinets)", nativeQuery = true)
-    void addCabinets(String cabinets);
+    void saveCabinets(String cabinets);
 
 }
