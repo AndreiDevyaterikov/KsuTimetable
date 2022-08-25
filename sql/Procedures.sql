@@ -48,6 +48,25 @@ begin
 end ;
 $$;
 
+
+create or replace procedure load_timetable(_data character varying)
+    language plpgsql
+as
+$$
+declare
+    item jsonb;
+    data_json jsonb;
+begin
+    data_json = to_jsonb(_data::jsonb);
+    for index in 0.. jsonb_array_length(data_json) - 1
+        loop
+        item = data_json -> index;
+
+        end loop;
+end;
+$$;
+
+
 create or replace procedure add_timetable(_data character varying)
     language plpgsql
 AS
@@ -151,3 +170,11 @@ begin
     return lesson;
 end;
 $$;
+
+create sequence if not exists logs_sequence
+increment 1
+start 1;
+
+create sequence if not exists timetable_sequence
+increment 1
+start 1;

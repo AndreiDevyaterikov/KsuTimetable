@@ -57,7 +57,7 @@ create table if not exists logbook(
     status varchar not null,
     time_changed timestamp not null,
     week_day integer not null,
-    cabinet_id varchar not null,
+    cabinet_id varchar ,
     teacher_id varchar,
 
     constraint FK_cabinet_id foreign key (cabinet_id) references cabinets(cabinet_id),
