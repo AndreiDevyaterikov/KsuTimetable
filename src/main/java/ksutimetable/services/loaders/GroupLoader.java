@@ -27,18 +27,19 @@ public class GroupLoader implements LoaderService {
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("action", "getgroups");
 
+        log.info("Loading directions to database...");
         directionRepository.findAll()
                 .forEach(direction -> {
                     requestParams.add("id", direction.getId());
 
-                    var response = requestService.doPost(requestParams);
+                    var response = requestService.postRequest(requestParams);
                     var groups = mapperService.mapResponseToList(Group.class, response);
                     groups.forEach(group -> group.setDirection(direction));
 
-                    log.info("Loading directions to database...");
+
                     groupRepository.saveAll(groups);
-                    log.info("Directions has been loaded");
                 });
+        log.info("Directions has been loaded");
 
     }
 }

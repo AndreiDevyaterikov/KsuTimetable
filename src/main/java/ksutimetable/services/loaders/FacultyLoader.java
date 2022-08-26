@@ -24,7 +24,7 @@ public class FacultyLoader implements LoaderService{
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("action", "getfaculties");
 
-        var response = requestService.doPost(requestParams);
+        var response = requestService.postRequest(requestParams);
         var faculties = mapperService.mapResponseToList(Faculty.class, response);
 
         log.info("Loading faculties to database...");

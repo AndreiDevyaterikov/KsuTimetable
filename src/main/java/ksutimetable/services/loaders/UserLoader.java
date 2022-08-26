@@ -24,7 +24,7 @@ public class UserLoader implements LoaderService{
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("action", "getteachers");
 
-        var response = requestService.doPost(requestParams);
+        var response = requestService.postRequest(requestParams);
         var users = mapperService.mapResponseToList(User.class, response);
 
         log.info("Loading users to database...");

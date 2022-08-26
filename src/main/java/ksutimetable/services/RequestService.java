@@ -12,7 +12,7 @@ public class RequestService {
 
     private final WebClient client;
 
-    public String doPost(MultiValueMap<String, String> requestParams){
+    public String postRequest(MultiValueMap<String, String> requestParams){
 
         return client
                 .post()

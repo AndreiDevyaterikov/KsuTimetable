@@ -23,7 +23,7 @@ public class BuildingLoader implements LoaderService {
 
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("action", "getbuildings");
-        var response = requestService.doPost(requestParams);
+        var response = requestService.postRequest(requestParams);
         var buildings = mapperService.mapResponseToList(Building.class, response);
         var jsonStringBuildings = mapperService.mapListToJsonString(buildings);
 

@@ -27,18 +27,20 @@ public class CabinetLoader implements LoaderService {
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("action", "getauds");
 
+        log.info("Loading cabinets to database...");
         buildingRepository.findAll()
                 .forEach(building -> {
                     requestParams.add("id", building.getId());
 
-                    var response = requestService.doPost(requestParams);
+                    var response = requestService.postRequest(requestParams);
                     var cabinets = mapperService.mapResponseToList(Cabinet.class, response);
                     cabinets.forEach(cabinet -> cabinet.setBuilding(building));
                     var jsonStringCabinets = mapperService.mapListToJsonString(cabinets);
 
-                    log.info("Loading cabinets to database...");
+
                     cabinetRepository.saveCabinets(jsonStringCabinets);
-                    log.info("Cabinets has been loaded");
                 });
+        log.info("Cabinets has been loaded");
+
     }
 }

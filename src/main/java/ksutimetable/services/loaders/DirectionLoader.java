@@ -27,17 +27,18 @@ public class DirectionLoader implements LoaderService {
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("action", "getbranches");
 
+        log.info("Loading directions to database...");
         facultyRepository.findAll()
                 .forEach(faculty -> {
                     requestParams.add("id", faculty.getId());
 
-                    var response = requestService.doPost(requestParams);
+                    var response = requestService.postRequest(requestParams);
                     var directions = mapperService.mapResponseToList(Direction.class, response);
                     directions.forEach(direction -> direction.setFaculty(faculty));
 
-                    log.info("Loading directions to database...");
                     directionRepository.saveAll(directions);
-                    log.info("Directions has been loaded");
                 });
+        log.info("Directions has been loaded");
+
     }
 }
