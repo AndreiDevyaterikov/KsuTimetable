@@ -42,8 +42,8 @@ create table if not exists timetable(
     lesson_type varchar not null,
     lesson_time_start varchar not null,
     lesson_time_end varchar not null,
-    cabinet_id varchar not null,
-    teacher_id varchar not null,
+    cabinet_id varchar,
+    teacher_id varchar,
     group_id varchar not null,
     subgroup varchar,
 

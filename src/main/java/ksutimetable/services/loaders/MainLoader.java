@@ -13,6 +13,7 @@ public class MainLoader {
     private final FacultyLoader facultyLoader;
     private final DirectionLoader directionLoader;
     private final GroupLoader groupLoader;
+    private final TimetableLoader timetableLoader;
     public void loadAllDataToDatabase(){
         buildingLoader.loadData();
         cabinetLoader.loadData();
@@ -20,5 +21,6 @@ public class MainLoader {
         facultyLoader.loadData();
         directionLoader.loadData();
         groupLoader.loadData();
+        timetableLoader.loadData();
     }
 }

@@ -49,62 +49,119 @@ end ;
 $$;
 
 
-create or replace procedure load_timetable(_data character varying)
+create procedure add_timetable(_data character varying)
     language plpgsql
 as
 $$
 declare
-    item jsonb;
-    data_json jsonb;
-begin
-    data_json = to_jsonb(_data::jsonb);
-    for index in 0.. jsonb_array_length(data_json) - 1
-        loop
-        item = data_json -> index;
+    _lesson jsonb; --one row of timetable
+    _timetable jsonb;
+    _group jsonb;
+    _lesson_time_start varchar;
+    _lesson_time_end varchar;
+    _lesson_name varchar;
+    _lesson_number integer;
+    _lesson_day integer;
+    _cabinet_name varchar;
+    _cabinet_id varchar;
+    _teacher_name varchar;
+    _teacher_id varchar;
+    _lesson_type varchar;
 
+begin
+    _timetable = to_jsonb(_data::jsonb);
+    for index in 0.. jsonb_array_length(_timetable) - 1
+        loop
+            _lesson_time_start = '';
+            _lesson_time_end = '';
+        _lesson = _timetable ->> index;
+        _group = _lesson ::jsonb ->> 'group';
+        _lesson_day = _lesson ::jsonb ->> 'y';
+        _lesson_name = _lesson ::jsonb ->> 'subject1';
+        _cabinet_name = _lesson ::jsonb ->> 'subject2';
+        _teacher_name = _lesson ::jsonb ->> 'subject3';
+        _lesson_type = _lesson ::jsonb ->> 'lessontype';
+
+        if
+            _group ::jsonb ->> 'id' in (select group_id from groups) and
+            _lesson ::jsonb ->> 'subject2' notnull and
+            _lesson ::jsonb ->> 'subject2' not in ('ДОТ', 'СДО', 'Организация', 'Спортивный корпус', 'Гл.', 'Гл - ')
+             then
+
+                 select cabinet_id
+                 from cabinets
+                 where cabinets.cabinet_name = _cabinet_name
+                 into _cabinet_id;
+
+                 select user_id
+                 from users
+                 where user_name = _teacher_name
+                 into _teacher_id;
+--
+--                  if
+--                              _lesson ::jsonb ->> 'x' = 1 then
+--                      _lesson_time_start := '08:30:00';
+--                      _lesson_time_end := '10:00:00';
+--                  end if;
+--                  if
+--                              _lesson ::jsonb ->> 'x' = 2 then
+--                      _lesson_time_start := '10:10:00';
+--                      _lesson_time_end := '11:40:00';
+--                  end if;
+--                  if
+--                              _lesson ::jsonb ->> 'x' = 3 then
+--                      _lesson_time_start := '11:50:00';
+--                      _lesson_time_end := '13:20:00';
+--                  end if;
+--                  if
+--                              _lesson ::jsonb ->> 'x' = 4 then
+--                      _lesson_time_start := '14:00:00';
+--                      _lesson_time_end := '15:30:00';
+--                  end if;
+--                  if
+--                              _lesson ::jsonb ->> 'x' = 5 then
+--                      _lesson_time_start := '15:40:00';
+--                      _lesson_time_end := '17:10:00';
+--                  end if;
+--                  if
+--                              _lesson ::jsonb ->> 'x' = 6 then
+--                      _lesson_time_start := '17:20:00';
+--                      _lesson_time_end := '18:50:00';
+--                  end if;
+--                  if
+--                              _lesson ::jsonb ->> 'x' = 7 then
+--                      _lesson_time_start := '19:00:00';
+--                      _lesson_time_end := '20:30:00';
+--                  end if;
+
+            insert into timetable (lesson_id,
+                                   lesson_name,
+                                   lesson_day,
+                                   lesson_number,
+                                   lesson_type,
+                                   lesson_time_start,
+                                   lesson_time_end,
+                                   cabinet_id,
+                                   teacher_id,
+                                   group_id,
+                                   subgroup)
+
+            values (
+                    nextval('timetable_sequence'),
+                    _lesson ::jsonb ->> 'subject1',
+                    cast (_lesson ::jsonb ->> 'y' as numeric),
+                    cast (_lesson ::jsonb ->> 'x' as numeric),
+                    _lesson ::jsonb ->> 'lessontype',
+                    _lesson_time_start,
+                    _lesson_time_end,
+                    _cabinet_id,
+                    _teacher_id,
+                    _group ::jsonb ->> 'id',
+                    _lesson ::jsonb ->> 'subgroup'
+                   );
+        end if;
         end loop;
 end;
-$$;
-
-
-create or replace procedure add_timetable(_data character varying)
-    language plpgsql
-AS
-$$
-declare
-    item    jsonb;
-    cabinet jsonb;
-    _group  jsonb;
-    teacher jsonb;
-    data_json jsonb;
-begin
-    data_json = to_jsonb(_data::jsonb);
-    for index in 0.. jsonb_array_length(data_json) - 1
-        loop
-            item = data_json -> index; -- timetable
-            cabinet = item ::jsonb ->> 'cabinet';
-            _group = item ::jsonb ->> 'group';
-            teacher = item ::jsonb ->> 'teacher';
-            raise notice 'value id % = %',index, cabinet;
-            if
-                            cabinet ::jsonb ->> 'id' in (select cabinet_id from cabinets) and
-                            _group ::jsonb ->> 'id' in (select group_id from groups) and
-                            teacher ::jsonb ->> 'id' in (select  from users) then
-                insert into timetable (lesson_id, lesson_day, lesson_name, lesson_number, lesson_time_end,
-                                       lesson_time_start, lesson_type, cabinet_id, group_id, teacher_id)
-                values (nextval('timetable_sequence'),
-                        cast(item ::jsonb ->> 'lessonDay' as numeric),
-                        item ::jsonb ->> 'lessonName',
-                        cast(item ::jsonb ->> 'lessonNumber' as numeric),
-                        item ::jsonb ->> 'lessonTimeEnd',
-                        item ::jsonb ->> 'lessonTimeStart',
-                        item ::jsonb ->> 'lessonType',
-                        cabinet ::jsonb ->> 'id',
-                        _group ::jsonb ->> 'id',
-                        teacher ::jsonb ->> 'id');
-            end if;
-        end loop;
-end ;
 $$;
 
 create or replace function get_current_log(_cabinetId varchar) returns logbook
