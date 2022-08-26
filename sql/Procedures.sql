@@ -72,8 +72,6 @@ begin
     _timetable = to_jsonb(_data::jsonb);
     for index in 0.. jsonb_array_length(_timetable) - 1
         loop
-            _lesson_time_start = '';
-            _lesson_time_end = '';
         _lesson = _timetable ->> index;
         _group = _lesson ::jsonb ->> 'group';
         _lesson_day = _lesson ::jsonb ->> 'y';
@@ -97,42 +95,42 @@ begin
                  from users
                  where user_name = _teacher_name
                  into _teacher_id;
---
---                  if
---                              _lesson ::jsonb ->> 'x' = 1 then
---                      _lesson_time_start := '08:30:00';
---                      _lesson_time_end := '10:00:00';
---                  end if;
---                  if
---                              _lesson ::jsonb ->> 'x' = 2 then
---                      _lesson_time_start := '10:10:00';
---                      _lesson_time_end := '11:40:00';
---                  end if;
---                  if
---                              _lesson ::jsonb ->> 'x' = 3 then
---                      _lesson_time_start := '11:50:00';
---                      _lesson_time_end := '13:20:00';
---                  end if;
---                  if
---                              _lesson ::jsonb ->> 'x' = 4 then
---                      _lesson_time_start := '14:00:00';
---                      _lesson_time_end := '15:30:00';
---                  end if;
---                  if
---                              _lesson ::jsonb ->> 'x' = 5 then
---                      _lesson_time_start := '15:40:00';
---                      _lesson_time_end := '17:10:00';
---                  end if;
---                  if
---                              _lesson ::jsonb ->> 'x' = 6 then
---                      _lesson_time_start := '17:20:00';
---                      _lesson_time_end := '18:50:00';
---                  end if;
---                  if
---                              _lesson ::jsonb ->> 'x' = 7 then
---                      _lesson_time_start := '19:00:00';
---                      _lesson_time_end := '20:30:00';
---                  end if;
+
+                 if
+                             cast(_lesson ::jsonb ->> 'x' as numeric) = 1 then
+                     _lesson_time_start := '08:30:00';
+                     _lesson_time_end := '10:00:00';
+                 end if;
+                 if
+                         cast(_lesson ::jsonb ->> 'x' as numeric) = 2 then
+                     _lesson_time_start := '10:10:00';
+                     _lesson_time_end := '11:40:00';
+                 end if;
+                 if
+                         cast(_lesson ::jsonb ->> 'x' as numeric) = 3 then
+                     _lesson_time_start := '11:50:00';
+                     _lesson_time_end := '13:20:00';
+                 end if;
+                 if
+                         cast(_lesson ::jsonb ->> 'x' as numeric) = 4 then
+                     _lesson_time_start := '14:00:00';
+                     _lesson_time_end := '15:30:00';
+                 end if;
+                 if
+                         cast(_lesson ::jsonb ->> 'x' as numeric) = 5 then
+                     _lesson_time_start := '15:40:00';
+                     _lesson_time_end := '17:10:00';
+                 end if;
+                 if
+                         cast(_lesson ::jsonb ->> 'x' as numeric) = 6 then
+                     _lesson_time_start := '17:20:00';
+                     _lesson_time_end := '18:50:00';
+                 end if;
+                 if
+                         cast(_lesson ::jsonb ->> 'x' as numeric) = 7 then
+                     _lesson_time_start := '19:00:00';
+                     _lesson_time_end := '20:30:00';
+                 end if;
 
             insert into timetable (lesson_id,
                                    lesson_name,
