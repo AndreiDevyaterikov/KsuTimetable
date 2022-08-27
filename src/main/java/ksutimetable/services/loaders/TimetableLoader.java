@@ -1,8 +1,6 @@
 package ksutimetable.services.loaders;
 
-import ksutimetable.entities.Cabinet;
 import ksutimetable.entities.Group;
-import ksutimetable.models.RequestModel;
 import ksutimetable.repositories.GroupRepository;
 import ksutimetable.repositories.TimetableRepository;
 import ksutimetable.services.MapperService;
@@ -12,8 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
-import java.io.Serializable;
 
 @Slf4j
 @Service
