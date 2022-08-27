@@ -74,7 +74,8 @@ begin
         loop
         _lesson = _timetable ->> index;
         _group = _lesson ::jsonb ->> 'group';
-        _lesson_day = _lesson ::jsonb ->> 'y';
+        _lesson_day = cast (_lesson ::jsonb ->> 'y' as numeric);
+        _lesson_number = cast(_lesson ::jsonb ->> 'x' as numeric);
         _lesson_name = _lesson ::jsonb ->> 'subject1';
         _cabinet_name = _lesson ::jsonb ->> 'subject2';
         _teacher_name = _lesson ::jsonb ->> 'subject3';
@@ -82,8 +83,8 @@ begin
 
         if
             _group ::jsonb ->> 'id' in (select group_id from groups) and
-            _lesson ::jsonb ->> 'subject2' notnull and
-            _lesson ::jsonb ->> 'subject2' not in ('ДОТ', 'СДО', 'Организация', 'Спортивный корпус', 'Гл.', 'Гл - ')
+            _cabinet_name notnull and
+            _cabinet_name not in ('ДОТ', 'СДО', 'Организация', 'Спортивный корпус', 'Гл.', 'Гл - ')
              then
 
                  select cabinet_id
@@ -97,39 +98,39 @@ begin
                  into _teacher_id;
 
                  if
-                             cast(_lesson ::jsonb ->> 'x' as numeric) = 1 then
-                     _lesson_time_start := '08:30:00';
-                     _lesson_time_end := '10:00:00';
+                    _lesson_number = 1 then
+                    _lesson_time_start = '08:30:00';
+                    _lesson_time_end = '10:00:00';
                  end if;
                  if
-                         cast(_lesson ::jsonb ->> 'x' as numeric) = 2 then
-                     _lesson_time_start := '10:10:00';
-                     _lesson_time_end := '11:40:00';
+                    _lesson_number = 2 then
+                    _lesson_time_start = '10:10:00';
+                    _lesson_time_end = '11:40:00';
                  end if;
                  if
-                         cast(_lesson ::jsonb ->> 'x' as numeric) = 3 then
-                     _lesson_time_start := '11:50:00';
-                     _lesson_time_end := '13:20:00';
+                    _lesson_number = 3 then
+                    _lesson_time_start = '11:50:00';
+                    _lesson_time_end = '13:20:00';
                  end if;
                  if
-                         cast(_lesson ::jsonb ->> 'x' as numeric) = 4 then
-                     _lesson_time_start := '14:00:00';
-                     _lesson_time_end := '15:30:00';
+                    _lesson_number = 4 then
+                    _lesson_time_start := '14:00:00';
+                    _lesson_time_end := '15:30:00';
                  end if;
                  if
-                         cast(_lesson ::jsonb ->> 'x' as numeric) = 5 then
-                     _lesson_time_start := '15:40:00';
-                     _lesson_time_end := '17:10:00';
+                    _lesson_number = 5 then
+                    _lesson_time_start := '15:40:00';
+                    _lesson_time_end := '17:10:00';
                  end if;
                  if
-                         cast(_lesson ::jsonb ->> 'x' as numeric) = 6 then
-                     _lesson_time_start := '17:20:00';
-                     _lesson_time_end := '18:50:00';
+                    _lesson_number = 6 then
+                    _lesson_time_start := '17:20:00';
+                    _lesson_time_end := '18:50:00';
                  end if;
                  if
-                         cast(_lesson ::jsonb ->> 'x' as numeric) = 7 then
-                     _lesson_time_start := '19:00:00';
-                     _lesson_time_end := '20:30:00';
+                    _lesson_number = 7 then
+                    _lesson_time_start := '19:00:00';
+                    _lesson_time_end := '20:30:00';
                  end if;
 
             insert into timetable (lesson_id,
@@ -146,10 +147,10 @@ begin
 
             values (
                     nextval('timetable_sequence'),
-                    _lesson ::jsonb ->> 'subject1',
-                    cast (_lesson ::jsonb ->> 'y' as numeric),
-                    cast (_lesson ::jsonb ->> 'x' as numeric),
-                    _lesson ::jsonb ->> 'lessontype',
+                    _lesson_name,
+                    _lesson_day,
+                    _lesson_number,
+                    _lesson_type,
                     _lesson_time_start,
                     _lesson_time_end,
                     _cabinet_id,
