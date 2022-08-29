@@ -41,9 +41,18 @@ begin
                     insert into cabinets (cabinet_id, cabinet_name, building_id)
                     values (item ::jsonb ->> 'id', item ::jsonb ->> 'title', building ::jsonb ->> 'id');
 
-                    insert into logbook(log_id, status, time_changed, week_day, cabinet_id, teacher_id)
-                    values (nextval('logs_sequence'), 'Аудитория свободна', localtimestamp,
-                            EXTRACT(ISODOW FROM localtimestamp), item ::jsonb ->> 'id', null);
+                    insert into logbook(log_id,
+                                        status,
+                                        time_changed,
+                                        week_day,
+                                        cabinet_id,
+                                        teacher_id)
+                    values (nextval('logs_sequence'),
+                            'Аудитория свободна',
+                            localtimestamp,
+                            EXTRACT(ISODOW FROM localtimestamp),
+                            item ::jsonb ->> 'id',
+                            null);
                 end if;
             end if;
         end loop;
@@ -299,6 +308,27 @@ begin
     where cabinet_id = _cabinetId
       and lesson_number = _lesson_number
     into _next_lesson;
+end;
+$$;
+
+create or replace function return_cabinet_from_activity(_cabinetId varchar) returns varchar
+    language plpgsql
+as
+$$
+declare
+    _current_log logbook;
+BEGIN
+    select *
+    from get_current_log(_cabinetId)
+    into _current_log;
+
+    if _current_log.status = 'Аудитория свободна' then
+        return 'Аудитория свободна в настоящий момент';
+    else
+        call write_log(_cabinetId, null, 'Аудитория свободна');
+        return 'Вы освободили аудиторию';
+    end if;
+
 end;
 $$;
 

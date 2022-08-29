@@ -18,4 +18,5 @@ public interface LogbookRepository extends JpaRepository<Logbook, Integer> {
     @Transactional
     @Query(value = "call write_log(:cabinet, :teacher, :status)", nativeQuery = true)
     void writeLog(String cabinet, String teacher, String status);
+
 }
