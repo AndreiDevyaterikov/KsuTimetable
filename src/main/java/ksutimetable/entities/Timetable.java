@@ -45,4 +45,7 @@ public class Timetable {
     @JoinColumn(name = "group_id")
     private Group group;
 
+    @Column(name = "type_week")
+    private String typeWeek;
+
 }

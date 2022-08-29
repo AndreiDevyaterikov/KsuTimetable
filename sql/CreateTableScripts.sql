@@ -52,6 +52,7 @@ create table if not exists timetable
     cabinet_id        varchar,
     teacher_id        varchar,
     group_id          varchar not null,
+    type_week         varchar,
     subgroup          varchar,
 
     constraint FK_cabinet_id foreign key (cabinet_id) references cabinets (cabinet_id),

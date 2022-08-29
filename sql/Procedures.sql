@@ -78,7 +78,8 @@ declare
     _teacher_name      varchar;
     _teacher_id        varchar;
     _lesson_type       varchar;
-
+    _number_week       integer;
+    _type_week         varchar;
 begin
     _timetable = to_jsonb(_data::jsonb);
     for index in 0.. jsonb_array_length(_timetable) - 1
@@ -91,6 +92,7 @@ begin
             _cabinet_name = _lesson ::jsonb ->> 'subject2';
             _teacher_name = _lesson ::jsonb ->> 'subject3';
             _lesson_type = _lesson ::jsonb ->> 'lessontype';
+            _number_week = cast(_lesson ::jsonb ->> 'n' as numeric);
 
             if
                             _group ::jsonb ->> 'id' in (select group_id from groups) and
@@ -107,6 +109,14 @@ begin
                 from users
                 where user_name = _teacher_name
                 into _teacher_id;
+
+                if _number_week = 1 then
+                    _type_week = 'Над чертой';
+                elsif _number_week = 2 then
+                    _type_week = 'Под чертой';
+                else
+                    _type_week = 'Любая';
+                end if;
 
                 if
                     _lesson_number = 1 then
@@ -154,6 +164,7 @@ begin
                                        cabinet_id,
                                        teacher_id,
                                        group_id,
+                                       type_week,
                                        subgroup)
 
                 values (nextval('timetable_sequence'),
@@ -166,6 +177,7 @@ begin
                         _cabinet_id,
                         _teacher_id,
                         _group ::jsonb ->> 'id',
+                        _type_week,
                         _lesson ::jsonb ->> 'subgroup');
             end if;
         end loop;
