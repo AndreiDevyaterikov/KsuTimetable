@@ -14,25 +14,25 @@ public class ManageService {
 
     private final TimetableRepository timetableRepository;
     private final UserRepository userRepository;
-    private final CabinetRepository  cabinetRepository;
+    private final CabinetRepository cabinetRepository;
 
-    public ResponseModel getCabinetForActivity(String cabinetId, String userId){
+    public ResponseModel getCabinetForActivity(String cabinetId, String userId) {
 
         var user = userRepository.findById(userId);
-        if(user.isEmpty()){
+        if (user.isEmpty()) {
             throw new KsuTimetableException("Не существует такого пользователя", 404);
         }
         var cabinet = cabinetRepository.findById(cabinetId);
-        if(cabinet.isEmpty()){
+        if (cabinet.isEmpty()) {
             throw new KsuTimetableException("Не существует такой аудитории", 404);
         }
 
         var description = timetableRepository.getCabinetForActivity(cabinetId, userId);
 
-        if(description.equals("Вы успешно успешно взяли аудиторию")){
+        if (description.equals("Вы успешно успешно взяли аудиторию")) {
             return new ResponseModel(200, description);
         } else {
-            return new ResponseModel(409, description);
+            throw new KsuTimetableException(description, 409);
         }
     }
 

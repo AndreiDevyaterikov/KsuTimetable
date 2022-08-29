@@ -21,7 +21,6 @@ public class GroupLoader implements LoaderService {
     private final MapperService mapperService;
 
 
-
     @Override
     public void loadData() {
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();

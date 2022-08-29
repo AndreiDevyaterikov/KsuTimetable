@@ -16,6 +16,7 @@ public class BuildingLoader implements LoaderService {
     private final BuildingRepository buildingRepository;
     private final RequestService requestService;
     private final MapperService mapperService;
+
     @Override
     public void loadData() {
 

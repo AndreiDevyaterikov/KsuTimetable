@@ -21,7 +21,7 @@ public class WebClientConfig {
 
 
     @Bean
-    WebClient getWebClient(){
+    WebClient getWebClient() {
 
         HttpClient httpClient = HttpClient.create()
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)

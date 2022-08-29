@@ -12,5 +12,4 @@ import java.util.Optional;
 @Repository
 public interface DirectionRepository extends JpaRepository<Direction, String> {
     List<Direction> findAllByFacultyId(String facultyId);
-    Optional<Direction> findById(String directionId);
 }

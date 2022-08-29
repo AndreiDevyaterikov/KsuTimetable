@@ -15,7 +15,8 @@ public class MainLoader {
     private final DirectionLoader directionLoader;
     private final GroupLoader groupLoader;
     private final TimetableLoader timetableLoader;
-    public ResponseModel loadAllDataToDatabase(){
+
+    public ResponseModel loadAllDataToDatabase() {
         buildingLoader.loadData();
         cabinetLoader.loadData();
         userLoader.loadData();

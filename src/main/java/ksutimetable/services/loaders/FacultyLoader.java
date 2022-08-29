@@ -13,7 +13,7 @@ import org.springframework.util.MultiValueMap;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class FacultyLoader implements LoaderService{
+public class FacultyLoader implements LoaderService {
     private final RequestService requestService;
     private final MapperService mapperService;
     private final FacultyRepository facultyRepository;

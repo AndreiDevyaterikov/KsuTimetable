@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 public class AwesomeExceptionHandler {
 
     @ExceptionHandler(KsuTimetableException.class)
-    public ResponseModel notFoundExceptionHandler (KsuTimetableException exception, HttpServletResponse response){
+    public ResponseModel notFoundExceptionHandler(KsuTimetableException exception, HttpServletResponse response) {
         response.setStatus(exception.getHttpCode());
         return new ResponseModel(exception.getHttpCode(),
                 exception.getDescription());

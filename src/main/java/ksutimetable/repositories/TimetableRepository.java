@@ -23,6 +23,7 @@ public interface TimetableRepository extends JpaRepository<Timetable, Integer> {
     List<Timetable> findAllByLessonDayAndCabinetIdOrderByLessonNumberAsc(Integer lessonDay, String cabinetId);
 
     Timetable findByCabinetIdAndLessonDayAndLessonNumber(String cabinetId, Integer lessonDay, Integer lessonNumber);
+
     @Transactional
     @Query(value = "select * from get_cabinet_for_activity(:cabinetId, :userId)", nativeQuery = true)
     String getCabinetForActivity(String cabinetId, String userId);

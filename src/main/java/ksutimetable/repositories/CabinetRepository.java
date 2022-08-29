@@ -13,8 +13,8 @@ import java.util.Optional;
 @Repository
 public interface CabinetRepository extends JpaRepository<Cabinet, String> {
 
-    Optional <Cabinet> findById(String id);
-    Optional <Cabinet> findByTitle(String title);
+
+    Optional<Cabinet> findByTitle(String title);
 
     @Modifying
     @Transactional

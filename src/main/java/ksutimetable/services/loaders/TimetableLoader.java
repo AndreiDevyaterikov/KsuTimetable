@@ -44,13 +44,12 @@ public class TimetableLoader implements LoaderService {
     }
 
 
-
     @Getter
     @Setter
     @AllArgsConstructor
     @RequiredArgsConstructor
     @ToString
-    public static class TimetableResponseModel{
+    public static class TimetableResponseModel {
         private Integer x;
         private Integer y;
         private Integer n;
