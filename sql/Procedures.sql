@@ -207,6 +207,71 @@ end;
 $$;
 
 
+create or replace function get_cabinet_for_activity(_cabinetId varchar, _userId varchar) returns character varying
+    language plpgsql
+as
+$$
+    declare
+        _lessons timetable;
+        _current_lesson timetable;
+        _next_lesson timetable;
+        _time_difference time;
+
+begin
+        SET TIMEZONE = 'EUROPE/MOSCOW';
+    select *
+    from timetable
+    where cabinet_id = _cabinetId
+    into _lessons;
+
+    if _lessons is not null then
+
+        select *
+        from get_current_lesson_in_cabinet(_cabinetId)
+        into _current_lesson;
+
+        if _current_lesson.teacher_id = _userId then
+            call write_log(_cabinetId, _userId, 'Аудитория занята');
+            return 'success';
+        end if;
+
+        if _current_lesson.teacher_id != _userId then
+
+            select *
+            from get_next_lesson_in_cabinet(_cabinetId, _current_lesson.lesson_number + 1)
+            into _next_lesson;
+
+            if _next_lesson is not null then
+                select extract(epoch from (cast(_next_lesson.lesson_time_start as time) - localtime) / 60) into _time_difference;
+
+                if _time_difference >= 55 then
+                    call write_log(_cabinetId, _userId, 'Аудитория занята');
+                    return 'success';
+                end if;
+
+                if _time_difference < 55 then
+                    return 'conflict';
+                end if;
+
+            end if;
+
+            if _next_lesson is null then
+                call write_log(_cabinetId, _userId, 'Аудитория занята');
+                return 'success';
+            end if;
+
+        end if;
+
+    end if;
+
+    if _lessons is null then
+        call write_log(_cabinetId, _userId, 'Аудитория занята');
+        return 'success';
+    end if;
+
+end;
+$$;
+
 
 create or replace function get_current_lesson_in_cabinet(_cabinetId varchar) returns timetable
     language plpgsql
@@ -226,6 +291,21 @@ begin
     return lesson;
 end;
 $$;
+
+create or replace function get_next_lesson_in_cabinet(_cabinetId varchar, _lesson_number integer) returns timetable
+    language plpgsql
+as
+    $$
+    declare
+        _next_lesson timetable;
+    begin
+        select *
+        from timetable
+        where cabinet_id = _cabinetId and
+              lesson_number = _lesson_number
+        into _next_lesson;
+    end;
+    $$;
 
 create sequence if not exists logs_sequence
 increment 1

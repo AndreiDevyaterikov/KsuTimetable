@@ -26,9 +26,6 @@ public class FacultyLoader implements LoaderService{
 
         var response = requestService.postRequest(requestParams);
         var faculties = mapperService.mapResponseToList(Faculty.class, response);
-
-        log.info("Loading faculties to database...");
         facultyRepository.saveAll(faculties);
-        log.info("Faculties has been loaded");
     }
 }

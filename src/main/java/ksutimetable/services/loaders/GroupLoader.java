@@ -27,7 +27,6 @@ public class GroupLoader implements LoaderService {
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("action", "getgroups");
 
-        log.info("Loading directions to database...");
         directionRepository.findAll()
                 .forEach(direction -> {
                     requestParams.add("id", direction.getId());
@@ -39,7 +38,6 @@ public class GroupLoader implements LoaderService {
 
                     groupRepository.saveAll(groups);
                 });
-        log.info("Directions has been loaded");
 
     }
 }

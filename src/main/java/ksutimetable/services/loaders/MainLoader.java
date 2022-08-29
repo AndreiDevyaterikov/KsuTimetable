@@ -1,5 +1,6 @@
 package ksutimetable.services.loaders;
 
+import ksutimetable.models.ResponseModel;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ public class MainLoader {
     private final DirectionLoader directionLoader;
     private final GroupLoader groupLoader;
     private final TimetableLoader timetableLoader;
-    public void loadAllDataToDatabase(){
+    public ResponseModel loadAllDataToDatabase(){
         buildingLoader.loadData();
         cabinetLoader.loadData();
         userLoader.loadData();
@@ -22,5 +23,6 @@ public class MainLoader {
         directionLoader.loadData();
         groupLoader.loadData();
         timetableLoader.loadData();
+        return new ResponseModel(200, "Данные успешно загружены");
     }
 }

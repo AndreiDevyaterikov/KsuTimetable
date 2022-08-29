@@ -6,12 +6,10 @@ import ksutimetable.repositories.FacultyRepository;
 import ksutimetable.services.MapperService;
 import ksutimetable.services.RequestService;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class DirectionLoader implements LoaderService {
@@ -26,8 +24,6 @@ public class DirectionLoader implements LoaderService {
 
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("action", "getbranches");
-
-        log.info("Loading directions to database...");
         facultyRepository.findAll()
                 .forEach(faculty -> {
                     requestParams.add("id", faculty.getId());
@@ -35,10 +31,7 @@ public class DirectionLoader implements LoaderService {
                     var response = requestService.postRequest(requestParams);
                     var directions = mapperService.mapResponseToList(Direction.class, response);
                     directions.forEach(direction -> direction.setFaculty(faculty));
-
                     directionRepository.saveAll(directions);
                 });
-        log.info("Directions has been loaded");
-
     }
 }

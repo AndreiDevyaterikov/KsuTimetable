@@ -27,8 +27,6 @@ public class UserLoader implements LoaderService{
         var response = requestService.postRequest(requestParams);
         var users = mapperService.mapResponseToList(User.class, response);
 
-        log.info("Loading users to database...");
         userRepository.saveAll(users);
-        log.info("Users has been loaded");
     }
 }

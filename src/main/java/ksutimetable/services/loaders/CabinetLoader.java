@@ -6,12 +6,10 @@ import ksutimetable.repositories.CabinetRepository;
 import ksutimetable.services.MapperService;
 import ksutimetable.services.RequestService;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class CabinetLoader implements LoaderService {
@@ -27,7 +25,6 @@ public class CabinetLoader implements LoaderService {
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("action", "getauds");
 
-        log.info("Loading cabinets to database...");
         buildingRepository.findAll()
                 .forEach(building -> {
                     requestParams.add("id", building.getId());
@@ -36,11 +33,7 @@ public class CabinetLoader implements LoaderService {
                     var cabinets = mapperService.mapResponseToList(Cabinet.class, response);
                     cabinets.forEach(cabinet -> cabinet.setBuilding(building));
                     var jsonStringCabinets = mapperService.mapListToJsonString(cabinets);
-
-
                     cabinetRepository.saveCabinets(jsonStringCabinets);
                 });
-        log.info("Cabinets has been loaded");
-
     }
 }
