@@ -207,67 +207,62 @@ end;
 $$;
 
 
-create or replace function get_cabinet_for_activity(_cabinetId varchar, _userId varchar) returns character varying
+create or replace function get_cabinet_for_activity(_cabinetId varchar, _userId varchar) returns varchar
     language plpgsql
 as
 $$
-    declare
-        _lessons timetable;
-        _current_lesson timetable;
-        _next_lesson timetable;
-        _time_difference time;
-
+declare
+    _lessons timetable;
+    _current_lesson timetable;
+    _next_lesson timetable;
+    _time_difference time;
 begin
-        SET TIMEZONE = 'EUROPE/MOSCOW';
+    SET TIMEZONE = 'EUROPE/MOSCOW';
     select *
     from timetable
     where cabinet_id = _cabinetId
     into _lessons;
 
-    if _lessons is not null then
+    if _lessons is not null then --Если сегодня есть пары в кабинете
 
         select *
         from get_current_lesson_in_cabinet(_cabinetId)
         into _current_lesson;
 
         if _current_lesson.teacher_id = _userId then
-            call write_log(_cabinetId, _userId, 'Аудитория занята');
-            return 'success';
-        end if;
 
-        if _current_lesson.teacher_id != _userId then
+            call write_log(_cabinetId, _userId, 'Аудитория занята');
+            return 'Вы успешно успешно взяли аудиторию';
+
+        else
 
             select *
             from get_next_lesson_in_cabinet(_cabinetId, _current_lesson.lesson_number + 1)
             into _next_lesson;
 
             if _next_lesson is not null then
+
                 select extract(epoch from (cast(_next_lesson.lesson_time_start as time) - localtime) / 60) into _time_difference;
 
                 if _time_difference >= 55 then
                     call write_log(_cabinetId, _userId, 'Аудитория занята');
-                    return 'success';
+                    return 'Вы успешно успешно взяли аудиторию';
+                else
+                    return 'Вы не можете взять аудиторию, до начала следующего занятия меньше 55 минут';
                 end if;
 
-                if _time_difference < 55 then
-                    return 'conflict';
-                end if;
-
-            end if;
-
-            if _next_lesson is null then
+            else
                 call write_log(_cabinetId, _userId, 'Аудитория занята');
-                return 'success';
+                return 'Вы успешно успешно взяли аудиторию';
             end if;
-
         end if;
 
+    else --Если сегодня пар в кабинете нет
+        call write_log(_cabinetId, _userId, 'Аудитория занята');
+        return 'Вы успешно успешно взяли аудиторию';
     end if;
 
-    if _lessons is null then
-        call write_log(_cabinetId, _userId, 'Аудитория занята');
-        return 'success';
-    end if;
+
 
 end;
 $$;
