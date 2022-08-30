@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface GroupRepository extends JpaRepository<Group, String> {
-    List<Group> findByDirectionId(String directionId);
+    List<Group> findAllByDirectionId(String directionId);
 }
