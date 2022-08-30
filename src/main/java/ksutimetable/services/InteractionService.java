@@ -43,6 +43,13 @@ public class InteractionService {
     }
 
     public ResponseModel returnCabinetFromActivity(String cabinetId) {
+
+        var cabinet = cabinetRepository.findById(cabinetId);
+        if (cabinet.isEmpty()) {
+            log.error("Not found cabinet with id: " + cabinetId);
+            throw new KsuTimetableException("Не существует такой аудитории", 404);
+        }
+
         var description = timetableRepository.returnCabinetFromActivity(cabinetId);
         if (description.equals("Вы освободили аудиторию")) {
             return new ResponseModel(200, description);
@@ -50,5 +57,4 @@ public class InteractionService {
             throw new KsuTimetableException(description, 409);
         }
     }
-
 }
