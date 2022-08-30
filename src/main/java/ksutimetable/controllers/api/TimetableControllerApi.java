@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 
 public interface TimetableControllerApi {
-    @GetMapping("/timetableToday/{groupId}")
+    @GetMapping("/today/{groupId}")
     @Operation(description = "Получить рассписание группы на текущий день")
     @ApiResponses(value = {
             @ApiResponse(
