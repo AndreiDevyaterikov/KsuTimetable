@@ -8,3 +8,6 @@ spring:
     password: root
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 8082
