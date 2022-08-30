@@ -26,6 +26,6 @@ public class BuildingLoader implements LoaderService {
         var buildings = mapperService.mapResponseToList(Building.class, response);
         var jsonStringBuildings = mapperService.mapListToJsonString(buildings);
 
-        buildingRepository.saveBuldings(jsonStringBuildings);
+        buildingRepository.saveBuildings(jsonStringBuildings);
     }
 }

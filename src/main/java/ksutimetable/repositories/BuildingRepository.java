@@ -13,5 +13,5 @@ public interface BuildingRepository extends JpaRepository<Building, String> {
     @Modifying
     @Transactional
     @Query(value = "CALL add_buildings(:buildings)", nativeQuery = true)
-    void saveBuldings(String buildings);
+    void saveBuildings(String buildings);
 }
