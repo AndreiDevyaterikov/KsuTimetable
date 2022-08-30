@@ -63,7 +63,6 @@ public interface KsuControllerApi {
     List<Faculty> getAllFaculties();
 
 
-
     @GetMapping("/groups/{directionId}")
     @Operation(summary = "Получить все группы для выбранного направления подготовки")
     @ApiResponses(value = {
