@@ -85,8 +85,8 @@ begin
         loop
             _lesson = _timetable ->> index;
             _group = _lesson ::jsonb ->> 'group';
-            _lesson_day = cast(_lesson ::jsonb ->> 'y' as numeric);
-            _lesson_number = cast(_lesson ::jsonb ->> 'x' as numeric);
+            _lesson_day = cast(_lesson ::jsonb ->> 'x' as numeric);
+            _lesson_number = cast(_lesson ::jsonb ->> 'y' as numeric);
             _lesson_name = _lesson ::jsonb ->> 'subject1';
             _cabinet_name = _lesson ::jsonb ->> 'subject2';
             _teacher_name = _lesson ::jsonb ->> 'subject3';
