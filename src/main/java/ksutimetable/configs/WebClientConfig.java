@@ -31,9 +31,9 @@ public class WebClientConfig {
                                 .addHandlerLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS)));
 
         return WebClient.builder()
-                .baseUrl("http://ksu.edu.ru/timetable/2022_1/")
+                .baseUrl("http://ksu.edu.ru/timetable/2022_2/")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                .defaultUriVariables(Collections.singletonMap("url", "https://ksu.edu.ru/timetable/2022_1/"))
+                .defaultUriVariables(Collections.singletonMap("url", "https://ksu.edu.ru/timetable/2022_2/"))
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .build();
 
