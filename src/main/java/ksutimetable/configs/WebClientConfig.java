@@ -6,7 +6,6 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -32,7 +31,7 @@ public class WebClientConfig {
 
         return WebClient.builder()
                 .baseUrl("http://ksu.edu.ru/timetable/2022_2/")
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                .defaultHeader(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .defaultUriVariables(Collections.singletonMap("url", "https://ksu.edu.ru/timetable/2022_2/"))
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .build();

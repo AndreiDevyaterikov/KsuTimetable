@@ -17,7 +17,7 @@ public class TimetableController implements TimetableControllerApi {
     private final TimetableService timetableService;
 
     @Override
-    public List<Timetable> getTimetableForTodayByGroupId(String groupId) {
-        return timetableService.getTodayTimetableForGroup(groupId);
+    public List<Timetable> getTimetableForTodayByGroupName(String groupName) {
+        return timetableService.getTodayTimetableForGroup(groupName);
     }
 }
