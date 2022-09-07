@@ -20,6 +20,8 @@ public class KsuService {
     private final GroupRepository groupRepository;
 
     public List<Faculty> getAllFaculties() {
+
+
         var faculties = facultyRepository.findAll();
         if (faculties.isEmpty()) {
             throw new KsuTimetableException("Институты отсутствуют в БД", 404);

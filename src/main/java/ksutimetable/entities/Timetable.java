@@ -48,4 +48,7 @@ public class Timetable {
     @Column(name = "type_week")
     private String typeWeek;
 
+    @Column(name = "subgroup")
+    private String subgroup;
+
 }

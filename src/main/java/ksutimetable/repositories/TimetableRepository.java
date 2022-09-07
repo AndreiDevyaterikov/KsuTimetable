@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Repository
 public interface TimetableRepository extends JpaRepository<Timetable, Integer> {
@@ -23,4 +25,6 @@ public interface TimetableRepository extends JpaRepository<Timetable, Integer> {
     @Transactional
     @Query(value = "select * from return_cabinet_from_activity(:cabinetId)", nativeQuery = true)
     String returnCabinetFromActivity(String cabinetId);
+
+    List<Timetable> findAllByGroupIdAndLessonDayOrderByLessonNumberAsc(String groupName, Integer lessonDay);
 }

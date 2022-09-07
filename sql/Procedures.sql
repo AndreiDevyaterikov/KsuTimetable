@@ -59,7 +59,6 @@ begin
 end ;
 $$;
 
-
 create procedure add_timetable(_data character varying)
     language plpgsql
 as
@@ -86,8 +85,8 @@ begin
         loop
             _lesson = _timetable ->> index;
             _group = _lesson ::jsonb ->> 'group';
-            _lesson_day = cast(_lesson ::jsonb ->> 'y' as numeric);
-            _lesson_number = cast(_lesson ::jsonb ->> 'x' as numeric);
+            _lesson_day = cast(_lesson ::jsonb ->> 'x' as numeric);
+            _lesson_number = cast(_lesson ::jsonb ->> 'y' as numeric);
             _lesson_name = _lesson ::jsonb ->> 'subject1';
             _cabinet_name = _lesson ::jsonb ->> 'subject2';
             _teacher_name = _lesson ::jsonb ->> 'subject3';
@@ -203,7 +202,6 @@ begin
 end;
 $$;
 
-
 create or replace procedure write_log(_cabinet character varying, _teacher character varying, _status varchar)
     language plpgsql
 as
@@ -226,7 +224,6 @@ BEGIN
             _teacher);
 end;
 $$;
-
 
 create or replace function get_cabinet_for_activity(_cabinetId varchar, _userId varchar) returns varchar
     language plpgsql
@@ -288,7 +285,6 @@ begin
 end;
 $$;
 
-
 create or replace function get_current_lesson_in_cabinet(_cabinetId varchar) returns timetable
     language plpgsql
 as
@@ -320,6 +316,8 @@ begin
     where cabinet_id = _cabinetId
       and lesson_number = _lesson_number
     into _next_lesson;
+
+    return _next_lesson;
 end;
 $$;
 
