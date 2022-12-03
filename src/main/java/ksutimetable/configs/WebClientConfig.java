@@ -1,9 +1,9 @@
 package ksutimetable.configs;
 
-
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -18,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class WebClientConfig {
 
+    @Value("${timetable.url}")
+    private String timetableUrl;
 
     @Bean
     WebClient getWebClient() {
@@ -30,9 +32,9 @@ public class WebClientConfig {
                                 .addHandlerLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS)));
 
         return WebClient.builder()
-                .baseUrl("https://ksu.edu.ru/timetable/2022_2/")
+                .baseUrl(timetableUrl)
                 .defaultHeader(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                .defaultUriVariables(Collections.singletonMap("url", "https://ksu.edu.ru/timetable/2022_2/"))
+                .defaultUriVariables(Collections.singletonMap("url", timetableUrl))
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .build();
 

@@ -2,7 +2,7 @@ package ksutimetable.controllers;
 
 import ksutimetable.controllers.api.TimetableControllerApi;
 import ksutimetable.entities.Timetable;
-import ksutimetable.services.TimetableService;
+import ksutimetable.services.impl.TimetableServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,10 +14,10 @@ import java.util.List;
 @AllArgsConstructor
 public class TimetableController implements TimetableControllerApi {
 
-    private final TimetableService timetableService;
+    private final TimetableServiceImpl timetableServiceImpl;
 
     @Override
     public List<Timetable> getTimetableForTodayByGroupName(String groupName) {
-        return timetableService.getTodayTimetableForGroup(groupName);
+        return timetableServiceImpl.getTodayTimetableForGroup(groupName);
     }
 }

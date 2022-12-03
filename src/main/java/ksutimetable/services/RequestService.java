@@ -1,25 +1,16 @@
 package ksutimetable.services;
 
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.client.WebClient;
+import ksutimetable.entities.*;
+import ksutimetable.models.TimetableResponseModel;
 
+import java.util.List;
 
-@Service
-@AllArgsConstructor
-public class RequestService {
-
-    private final WebClient client;
-
-    public String postRequest(MultiValueMap<String, String> requestParams) {
-
-        return client
-                .post()
-                .uri("timetable.php")
-                .bodyValue(requestParams)
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-    }
+public interface RequestService {
+    List<Building> getBuildingsRequest();
+    List<Faculty> getFacultiesRequest();
+    List<User> getUsersRequest();
+    List<Cabinet> getCabinetsByBuildingRequest(String buildingId);
+    List<Direction> getDirectionsByFacultyRequest(String facultyId);
+    List<Group> getGroupByDirectionRequest(String directionId);
+    List<TimetableResponseModel> getTimetableByGroupRequest(String groupId);
 }

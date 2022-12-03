@@ -2,7 +2,7 @@ package ksutimetable.controllers;
 
 import ksutimetable.controllers.api.LoaderControllerApi;
 import ksutimetable.models.ResponseModel;
-import ksutimetable.services.loaders.MainLoader;
+import ksutimetable.services.LoadService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class LoaderDataController implements LoaderControllerApi {
 
-    private final MainLoader mainLoader;
+    private final LoadService loadService;
 
     @Override
     public ResponseModel loadAllDataToDatabase() {
-        return mainLoader.loadAllDataToDatabase();
+        return loadService.loadData();
     }
 }
