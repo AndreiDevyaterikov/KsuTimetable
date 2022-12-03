@@ -32,4 +32,9 @@ public class TimetableServiceImpl implements TimetableService {
     public void saveTimetables(String timetables) {
         timetableRepository.addTimetable(timetables);
     }
+
+    @Override
+    public List<Timetable> getTimetableByCabinetId(String cabinetId) {
+        return timetableRepository.findAllByCabinetId(cabinetId);
+    }
 }

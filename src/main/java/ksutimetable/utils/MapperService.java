@@ -1,4 +1,4 @@
-package ksutimetable.services;
+package ksutimetable.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -2,6 +2,7 @@ package ksutimetable.services.impl;
 
 import ksutimetable.models.ResponseModel;
 import ksutimetable.services.*;
+import ksutimetable.utils.MapperService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

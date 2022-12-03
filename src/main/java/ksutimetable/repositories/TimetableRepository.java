@@ -27,4 +27,5 @@ public interface TimetableRepository extends JpaRepository<Timetable, Integer> {
     String returnCabinetFromActivity(String cabinetId);
 
     List<Timetable> findAllByGroupIdAndLessonDayOrderByLessonNumberAsc(String groupName, Integer lessonDay);
+    List<Timetable> findAllByCabinetId(String cabinetId);
 }

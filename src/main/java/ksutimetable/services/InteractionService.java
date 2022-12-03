@@ -17,19 +17,13 @@ public class InteractionService {
     private final TimetableRepository timetableRepository;
     private final UserRepository userRepository;
     private final CabinetRepository cabinetRepository;
+    private final UserService userService;
+    private final CabinetService cabinetService;
 
     public ResponseModel getCabinetForActivity(String cabinetId, String userId) {
 
-        var user = userRepository.findById(userId);
-        if (user.isEmpty()) {
-            log.error("Not found user with id: " + userId);
-            throw new KsuTimetableException("Не существует такого пользователя", 404);
-        }
-        var cabinet = cabinetRepository.findById(cabinetId);
-        if (cabinet.isEmpty()) {
-            log.error("Not found cabinet with id: " + cabinetId);
-            throw new KsuTimetableException("Не существует такой аудитории", 404);
-        }
+        var user = userService.getUserById(userId);
+        var cabinet = cabinetService.getCabinetById(cabinetId);
 
         var description = timetableRepository.getCabinetForActivity(cabinetId, userId);
 
