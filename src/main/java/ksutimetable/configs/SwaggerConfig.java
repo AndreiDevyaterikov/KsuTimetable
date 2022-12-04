@@ -13,6 +13,4 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info().title("Ksu timetable API"));
     }
-
-
 }

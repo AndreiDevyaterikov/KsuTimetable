@@ -1,5 +1,6 @@
 package ksutimetable.services.impl;
 
+import ksutimetable.constants.Constants;
 import ksutimetable.entities.User;
 import ksutimetable.exceptions.KsuTimetableException;
 import ksutimetable.repositories.UserRepository;
@@ -23,17 +24,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getUsers() {
-        return userRepository.findAll();
-    }
-
-    @Override
     public User getUserById(String userId) {
         var userOpt = userRepository.findById(userId);
-        if(userOpt.isPresent()){
+        if (userOpt.isPresent()) {
             return userOpt.get();
         } else {
-            var message = String.format("Not found user with id %s", userId);
+            var message = String.format(Constants.NOT_FOUND_USER_WITH_ID, userId);
             log.info(message);
             throw new KsuTimetableException(message, 404);
         }

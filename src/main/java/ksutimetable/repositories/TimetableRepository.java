@@ -15,17 +15,28 @@ public interface TimetableRepository extends JpaRepository<Timetable, Integer> {
 
     @Modifying
     @Transactional
-    @Query(value = "CALL add_timetable(:timetable)", nativeQuery = true)
+    @Query(value = "call save_timetable(:timetable)", nativeQuery = true)
     void addTimetable(String timetable);
 
     @Transactional
     @Query(value = "select * from get_cabinet_for_activity(:cabinetId, :userId)", nativeQuery = true)
-    String getCabinetForActivity(String cabinetId, String userId);
+    Boolean getCabinetForActivity(String cabinetId, String userId);
 
     @Transactional
     @Query(value = "select * from return_cabinet_from_activity(:cabinetId)", nativeQuery = true)
-    String returnCabinetFromActivity(String cabinetId);
+    Boolean returnCabinetFromActivity(String cabinetId);
 
-    List<Timetable> findAllByGroupIdAndLessonDayOrderByLessonNumberAsc(String groupName, Integer lessonDay);
+    @Transactional
+    @Query(value = "select * from get_current_lesson_in_cabinet(:cabinetId)", nativeQuery = true)
+    Timetable getCurrentLessonByCabinetId(String cabinetId);
+
+    @Transactional
+    @Query(value = "select * from get_today_lessons_in_cabinet(:cabinetId)", nativeQuery = true)
+    List<Timetable> getTodayLessonsInCabinet(String cabinetId);
+
+    @Transactional
+    @Query(value = "select * from get_today_lessons_for_group(:groupId)", nativeQuery = true)
+    List<Timetable> getTodayLessonsForGroup(String groupId);
+
     List<Timetable> findAllByCabinetId(String cabinetId);
 }

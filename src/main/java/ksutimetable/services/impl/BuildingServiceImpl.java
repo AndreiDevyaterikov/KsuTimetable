@@ -3,6 +3,7 @@ package ksutimetable.services.impl;
 import ksutimetable.entities.Building;
 import ksutimetable.repositories.BuildingRepository;
 import ksutimetable.services.BuildingService;
+import ksutimetable.utils.MapperService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +16,9 @@ public class BuildingServiceImpl implements BuildingService {
     private final BuildingRepository buildingRepository;
 
     @Override
-    public void saveBuildings(String buildings) {
-        buildingRepository.saveBuildings(buildings);
+    public void saveBuildings(List<Building> buildings) {
+        var buildingsJson = MapperService.mapListToJsonString(buildings);
+        buildingRepository.saveBuildings(buildingsJson);
     }
 
     @Override

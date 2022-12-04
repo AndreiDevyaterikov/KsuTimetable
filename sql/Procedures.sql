@@ -1,4 +1,5 @@
-create or replace procedure add_buildings(_data character varying)
+-- Запрос на добавление корпусов\аудиторий в БД
+create or replace procedure save_buildings(_data character varying)
     language plpgsql
 AS
 $$
@@ -21,7 +22,8 @@ begin
 end
 $$;
 
-create or replace procedure add_cabinet(_data character varying)
+-- Запрос на добавление аудиторий в БД
+create or replace procedure save_cabinets(_data character varying)
     language plpgsql
 AS
 $$
@@ -59,7 +61,8 @@ begin
 end ;
 $$;
 
-create procedure add_timetable(_data character varying)
+-- Запрос на добавление расписания в БД
+create procedure save_timetable(_data character varying)
     language plpgsql
 as
 $$
@@ -183,6 +186,7 @@ begin
 end;
 $$;
 
+-- Запрос на получение актуального лога аудитории
 create or replace function get_current_log(_cabinetId varchar) returns logbook
     language plpgsql
 as
@@ -190,7 +194,7 @@ $$
 declare
     last_log logbook;
 begin
-    SET TIMEZONE = 'EUROPE/MOSCOW';
+    set timezone = 'europe/moscow';
     select *
     from logbook
     where cabinet_id = _cabinetId
@@ -202,13 +206,14 @@ begin
 end;
 $$;
 
+-- Запрос для записи изменения статуса аудитории
 create or replace procedure write_log(_cabinet character varying, _teacher character varying, _status varchar)
     language plpgsql
 as
 $$
 
 BEGIN
-    SET TIMEZONE = 'EUROPE/MOSCOW';
+    set timezone = 'europe/moscow';
 
     insert into logbook(log_id,
                         status,
@@ -218,13 +223,14 @@ BEGIN
                         teacher_id)
     values (nextval('logs_sequence'),
             _status,
-            localtimestamp
-               , EXTRACT(ISODOW FROM localtimestamp),
+            localtimestamp,
+            extract(isodow from localtimestamp),
             _cabinet,
             _teacher);
 end;
 $$;
 
+-- Запрос на получение кабинета для занятия
 create or replace function get_cabinet_for_activity(_cabinetId varchar, _userId varchar) returns varchar
     language plpgsql
 as
@@ -235,7 +241,7 @@ declare
     _next_lesson     timetable;
     _time_difference time;
 begin
-    SET TIMEZONE = 'EUROPE/MOSCOW';
+    set timezone = 'europe/moscow';
     select *
     from timetable
     where cabinet_id = _cabinetId
@@ -280,30 +286,29 @@ begin
         call write_log(_cabinetId, _userId, 'Аудитория занята');
         return 'Вы успешно успешно взяли аудиторию';
     end if;
-
-
 end;
 $$;
 
-create or replace function get_current_lesson_in_cabinet(_cabinetId varchar) returns timetable
+-- Запрос на получение текущей пары в кабинете
+create or replace function get_current_lesson_in_cabinet(_cabinet_id varchar) returns timetable
     language plpgsql
 as
 $$
 declare
     lesson timetable;
 begin
-    SET TIMEZONE = 'EUROPE/MOSCOW';
+    set timezone = 'europe/moscow';
     select *
     from timetable
     where lesson_day = EXTRACT(ISODOW FROM localtimestamp)
       and cast(localtime as varchar) between lesson_time_start and lesson_time_end
-      and cabinet_id = _cabinetId
+      and cabinet_id = _cabinet_id
     into lesson;
-
     return lesson;
 end;
 $$;
 
+-- Запрос на получение следующей пары в кабинете
 create or replace function get_next_lesson_in_cabinet(_cabinetId varchar, _lesson_number integer) returns timetable
     language plpgsql
 as
@@ -316,12 +321,12 @@ begin
     where cabinet_id = _cabinetId
       and lesson_number = _lesson_number
     into _next_lesson;
-
     return _next_lesson;
 end;
 $$;
 
-create or replace function return_cabinet_from_activity(_cabinetId varchar) returns varchar
+-- Запрос на возврат аудитории после пары
+create or replace function return_cabinet_from_activity(_cabinetId varchar) returns boolean
     language plpgsql
 as
 $$
@@ -333,14 +338,46 @@ BEGIN
     into _current_log;
 
     if _current_log.status = 'Аудитория свободна' then
-        return 'Аудитория свободна в настоящий момент';
+        return false;
     else
         call write_log(_cabinetId, null, 'Аудитория свободна');
-        return 'Вы освободили аудиторию';
+        return true;
     end if;
 
 end;
 $$;
+
+-- Запрос на получение расписания пар в аудитории для текущего дня
+create or replace function get_today_lessons_in_cabinet(_cabinetId varchar) returns setof timetable
+    language plpgsql
+as
+$$
+BEGIN
+    set timezone = 'europe/moscow';
+    return query
+        select *
+        from timetable
+        where cabinet_id = _cabinetId
+          and lesson_day = extract(isodow from localtimestamp);
+end;
+$$;
+
+-- Запрос на получение расписания группы для текущего дня
+create or replace function get_today_lessons_for_group(_groupId varchar) returns setof timetable
+    language plpgsql
+as
+$$
+BEGIN
+    set timezone = 'europe/moscow';
+    return query
+        select *
+        from timetable
+        where group_id = _groupId
+          and lesson_day = extract(isodow from localtimestamp)
+        order by lesson_number;
+end;
+$$;
+
 
 create sequence if not exists logs_sequence
     increment 1

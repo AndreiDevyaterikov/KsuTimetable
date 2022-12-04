@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import ksutimetable.models.ResponseModel;
 import org.springframework.web.bind.annotation.PostMapping;
 
-public interface LoaderControllerApi {
+public interface LoadControllerApi {
     @PostMapping("/allData")
     @Operation(summary = "Загрузка данных в БД")
     @ApiResponses(value = {
@@ -24,5 +24,5 @@ public interface LoaderControllerApi {
                     description = "Данные успешно загружены"
             )
     })
-    ResponseModel loadAllDataToDatabase();
+    ResponseModel loadDataToDatabase();
 }

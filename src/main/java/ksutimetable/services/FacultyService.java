@@ -5,6 +5,18 @@ import ksutimetable.entities.Faculty;
 import java.util.List;
 
 public interface FacultyService {
+
+    /**
+     * Метод сохранения факультетов
+     *
+     * @param faculties Список факультетов для сохранения
+     */
     void saveFaculties(List<Faculty> faculties);
+
+    /**
+     * Метод получения факультетов
+     *
+     * @return {@link Faculty} Список факультетов
+     */
     List<Faculty> getFaculties();
 }

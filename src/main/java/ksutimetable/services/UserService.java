@@ -5,7 +5,19 @@ import ksutimetable.entities.User;
 import java.util.List;
 
 public interface UserService {
+
+    /**
+     * Метод сохранения пользователей
+     *
+     * @param users Список пользователей для сохранения
+     */
     void saveUsers(List<User> users);
-    List<User> getUsers();
+
+    /**
+     * Метод поиска пользователя по id
+     *
+     * @param userId Id пользователя для поиска
+     * @return {@link User} Найденный пользователь
+     */
     User getUserById(String userId);
 }

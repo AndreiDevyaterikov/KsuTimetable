@@ -80,6 +80,12 @@ public class RequestServiceImpl implements RequestService {
         return MapperService.mapResponseToList(TimetableResponseModel.class, response);
     }
 
+    /**
+     * Метод выполения запроса
+     *
+     * @param requestParams Переданные параметры для запроса
+     * @return {@link String} Ответ запроса
+     */
     private String executePostRequest(MultiValueMap<String, String> requestParams) {
         return client
                 .post()
