@@ -2,7 +2,7 @@ package ksutimetable.services.impl;
 
 import ksutimetable.entities.*;
 import ksutimetable.models.TimetableResponseModel;
-import ksutimetable.services.MapperService;
+import ksutimetable.utils.MapperService;
 import ksutimetable.services.RequestService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -80,6 +80,12 @@ public class RequestServiceImpl implements RequestService {
         return MapperService.mapResponseToList(TimetableResponseModel.class, response);
     }
 
+    /**
+     * Метод выполения запроса
+     *
+     * @param requestParams Переданные параметры для запроса
+     * @return {@link String} Ответ запроса
+     */
     private String executePostRequest(MultiValueMap<String, String> requestParams) {
         return client
                 .post()

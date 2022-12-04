@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import ksutimetable.constants.Constants;
 import ksutimetable.models.ResponseModel;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -74,7 +75,7 @@ public interface InteractionControllerApi {
                                     array = @ArraySchema(schema = @Schema(implementation = ResponseModel.class))
                             )
                     },
-                    description = "Не существует такой аудитории"
+                    description = Constants.NOT_FOUND_CABINET_WITH_ID
             ),
 
             @ApiResponse(

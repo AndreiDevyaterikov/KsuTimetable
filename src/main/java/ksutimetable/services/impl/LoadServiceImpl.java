@@ -37,8 +37,7 @@ public class LoadServiceImpl implements LoadService {
     private void loadBuildings() {
         log.info("Загрузка строений...");
         var buildings = requestService.getBuildingsRequest();
-        var buildingsJson = MapperService.mapListToJsonString(buildings);
-        buildingService.saveBuildings(buildingsJson);
+        buildingService.saveBuildings(buildings);
         log.info("Загрузка строений завершена");
     }
 
@@ -48,8 +47,7 @@ public class LoadServiceImpl implements LoadService {
         buildings.forEach(building -> {
             var cabinets = requestService.getCabinetsByBuildingRequest(building.getId());
             cabinets.forEach(cabinet -> cabinet.setBuilding(building));
-            var cabinetsJson = MapperService.mapListToJsonString(cabinets);
-            cabinetService.saveCabinets(cabinetsJson);
+            cabinetService.saveCabinets(cabinets);
         });
         log.info("Загрузка кабинетов завершена");
     }
@@ -96,8 +94,7 @@ public class LoadServiceImpl implements LoadService {
         groups.forEach(group -> {
             var timetables = requestService.getTimetableByGroupRequest(group.getId());
             timetables.forEach(timetable -> timetable.setGroup(group));
-            var timetablesJson = MapperService.mapListToJsonString(timetables);
-            timetableService.saveTimetables(timetablesJson);
+            timetableService.saveTimetables(timetables);
         });
         log.info("Загрузка расписаний для групп завершена");
     }
