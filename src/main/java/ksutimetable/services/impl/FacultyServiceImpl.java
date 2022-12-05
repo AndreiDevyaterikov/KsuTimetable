@@ -1,6 +1,8 @@
 package ksutimetable.services.impl;
 
+import ksutimetable.constants.Constants;
 import ksutimetable.entities.Faculty;
+import ksutimetable.exceptions.KsuTimetableException;
 import ksutimetable.repositories.FacultyRepository;
 import ksutimetable.services.FacultyService;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +24,16 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public List<Faculty> getFaculties() {
         return facultyRepository.findAll();
+    }
+
+    @Override
+    public Faculty getFacultyById(String facultyId) {
+        var facultyOpt = facultyRepository.findById(facultyId);
+        if (facultyOpt.isPresent()) {
+            return facultyOpt.get();
+        } else {
+            var message = String.format(Constants.NOT_FOUND_FACULTY_WITH_ID, facultyId);
+            throw new KsuTimetableException(message, 404);
+        }
     }
 }

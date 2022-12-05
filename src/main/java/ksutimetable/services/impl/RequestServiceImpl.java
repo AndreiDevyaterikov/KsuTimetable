@@ -2,8 +2,8 @@ package ksutimetable.services.impl;
 
 import ksutimetable.entities.*;
 import ksutimetable.models.TimetableResponseModel;
-import ksutimetable.utils.MapperService;
 import ksutimetable.services.RequestService;
+import ksutimetable.utils.MapperService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;

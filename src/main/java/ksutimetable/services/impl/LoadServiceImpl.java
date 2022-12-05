@@ -1,5 +1,6 @@
 package ksutimetable.services.impl;
 
+import ksutimetable.constants.Constants;
 import ksutimetable.models.ResponseModel;
 import ksutimetable.services.*;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class LoadServiceImpl implements LoadService {
         loadGroups();
         loadTimetables();
         log.info("Загрузка данных завершена");
-        return new ResponseModel(200, "Данные загружены");
+        return new ResponseModel(200, Constants.DATA_HAS_BEEN_LOADED);
     }
 
     private void loadBuildings() {

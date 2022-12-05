@@ -19,4 +19,12 @@ public interface FacultyService {
      * @return {@link Faculty} Список факультетов
      */
     List<Faculty> getFaculties();
+
+    /**
+     * Метод поиска факультета по id
+     *
+     * @param facultyId Id факультета для поиска
+     * @return {@link Faculty} Найденый факультет
+     */
+    Faculty getFacultyById(String facultyId);
 }

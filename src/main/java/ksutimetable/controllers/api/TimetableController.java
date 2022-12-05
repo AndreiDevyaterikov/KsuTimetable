@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 
 @Tag(name = "Timetable controller", description = "Контроллер для получения расписания")
-public interface TimetableControllerApi {
+public interface TimetableController {
     @GetMapping("/today/{groupName}")
     @Operation(description = "Получить рассписание группы на текущий день")
     @ApiResponses(value = {

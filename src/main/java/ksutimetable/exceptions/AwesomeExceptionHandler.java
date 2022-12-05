@@ -14,6 +14,6 @@ public class AwesomeExceptionHandler {
     public ResponseModel notFoundExceptionHandler(KsuTimetableException exception, HttpServletResponse response) {
         response.setStatus(exception.getHttpCode());
         return new ResponseModel(exception.getHttpCode(),
-                exception.getDescription());
+                exception.getMessage());
     }
 }

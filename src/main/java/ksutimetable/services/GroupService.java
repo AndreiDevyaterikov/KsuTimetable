@@ -19,7 +19,7 @@ public interface GroupService {
      * @param groupName Имя группы для поиска
      * @return {@link Group} Найденная группа
      */
-    Group getByGroupName(String groupName);
+    Group getGroupByName(String groupName);
 
     /**
      * Получение всех групп
@@ -27,4 +27,12 @@ public interface GroupService {
      * @return {@link Group} Список всех групп
      */
     List<Group> getGroups();
+
+    /**
+     * Метод получения всех групп для направления подготовки
+     *
+     * @param directionId Id направления подготовки для поиска групп
+     * @return {@link Group} Список всех групп для направления подготовки
+     */
+    List<Group> getGroupsByDirectionId(String directionId);
 }

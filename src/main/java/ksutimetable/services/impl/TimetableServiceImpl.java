@@ -19,7 +19,7 @@ public class TimetableServiceImpl implements TimetableService {
     private final GroupService groupService;
 
     public List<Timetable> getTodayTimetableForGroup(String groupName) {
-        var group = groupService.getByGroupName(groupName);
+        var group = groupService.getGroupByName(groupName);
         return timetableRepository.getTodayLessonsForGroup(group.getId());
     }
 
@@ -42,5 +42,15 @@ public class TimetableServiceImpl implements TimetableService {
     @Override
     public List<Timetable> getTodayLessonsByCabinet(Cabinet cabinet) {
         return timetableRepository.getTodayLessonsInCabinet(cabinet.getId());
+    }
+
+    @Override
+    public Boolean getCabinetForActivity(String cabinetId, String userId) {
+        return timetableRepository.getCabinetForActivity(cabinetId, userId);
+    }
+
+    @Override
+    public Boolean returnCabinetFromActivity(String cabinetId) {
+        return timetableRepository.returnCabinetFromActivity(cabinetId);
     }
 }

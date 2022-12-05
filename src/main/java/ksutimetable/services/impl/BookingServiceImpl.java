@@ -1,9 +1,12 @@
-package ksutimetable.services;
+package ksutimetable.services.impl;
 
 import ksutimetable.constants.Constants;
 import ksutimetable.exceptions.KsuTimetableException;
 import ksutimetable.models.ResponseModel;
-import ksutimetable.repositories.TimetableRepository;
+import ksutimetable.services.BookingService;
+import ksutimetable.services.CabinetService;
+import ksutimetable.services.TimetableService;
+import ksutimetable.services.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -11,17 +14,18 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class InteractionService {
+public class BookingServiceImpl implements BookingService {
 
-    private final TimetableRepository timetableRepository;
+    private final TimetableService timetableService;
     private final UserService userService;
     private final CabinetService cabinetService;
 
+    @Override
     public ResponseModel getCabinetForActivity(String cabinetId, String userId) {
 
         var user = userService.getUserById(userId);
         var cabinet = cabinetService.getCabinetById(cabinetId);
-        var successfullyResult = timetableRepository.getCabinetForActivity(cabinet.getId(), user.getId());
+        var successfullyResult = timetableService.getCabinetForActivity(cabinet.getId(), user.getId());
 
         if (successfullyResult) {
             var message = String.format(Constants.CABINET_SUCCESSFULLY_BOOKED, cabinet.getTitle());
@@ -34,10 +38,11 @@ public class InteractionService {
         }
     }
 
+    @Override
     public ResponseModel returnCabinetFromActivity(String cabinetId) {
 
         var cabinet = cabinetService.getCabinetById(cabinetId);
-        var successfullyResult = timetableRepository.returnCabinetFromActivity(cabinet.getId());
+        var successfullyResult = timetableService.returnCabinetFromActivity(cabinet.getId());
 
         if (successfullyResult) {
             var message = String.format(Constants.CABINET_SUCCESSFULLY_FREED, cabinet.getTitle());

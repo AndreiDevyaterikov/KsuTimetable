@@ -39,4 +39,21 @@ public interface TimetableService {
      * @return {@link Timetable} Список пар на текущий день
      */
     List<Timetable> getTodayLessonsByCabinet(Cabinet cabinet);
+
+    /**
+     * Метод проверки на доступность аудитории для бронирования
+     *
+     * @param cabinetId Id аудитории для бронирования
+     * @param userId    Id Пользователя, бронирующего аудиторию
+     * @return {@link Boolean} Результат проверки, true или false
+     */
+    Boolean getCabinetForActivity(String cabinetId, String userId);
+
+    /**
+     * Метод проверки на доступность аудитории к возврату
+     *
+     * @param cabinetId Id аудитории для возврата после занятия
+     * @return {@link Boolean} Результат проверки, true или false
+     */
+    Boolean returnCabinetFromActivity(String cabinetId);
 }
