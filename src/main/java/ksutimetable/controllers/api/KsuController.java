@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import ksutimetable.constants.Constants;
 import ksutimetable.entities.Direction;
 import ksutimetable.entities.Faculty;
 import ksutimetable.entities.Group;
@@ -15,7 +17,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-public interface KsuControllerApi {
+@Tag(name = "Ksu controller", description = "Контроллер для получения прочей информации")
+public interface KsuController {
 
     @GetMapping("/directions/{facultyId}")
     @Operation(summary = "Получить направления подготовки для выбранного института")
@@ -28,14 +31,17 @@ public interface KsuControllerApi {
                                     array = @ArraySchema(schema = @Schema(implementation = ResponseModel.class))
                             )
                     },
-                    description = "Не найдено направлений подготовки для выбранного института"),
-
-            @ApiResponse(responseCode = "200", content = {
-                    @Content(
-                            mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Direction.class))
-                    )
-            })
+                    description = Constants.NOT_FOUND_FACULTY_WITH_ID
+            ),
+            @ApiResponse(
+                    responseCode = "200",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = Direction.class))
+                            )
+                    }
+            )
     })
     List<Direction> getDirectionsByFacultyId(@PathVariable String facultyId);
 
@@ -44,21 +50,14 @@ public interface KsuControllerApi {
     @Operation(summary = "Получить все институты")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "404",
+                    responseCode = "200",
                     content = {
                             @Content(
                                     mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = ResponseModel.class))
+                                    array = @ArraySchema(schema = @Schema(implementation = Faculty.class))
                             )
-                    },
-                    description = "Институты отсутствуют в БД"),
-
-            @ApiResponse(responseCode = "200", content = {
-                    @Content(
-                            mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Faculty.class))
-                    )
-            })
+                    }
+            )
     })
     List<Faculty> getAllFaculties();
 
@@ -74,14 +73,17 @@ public interface KsuControllerApi {
                                     array = @ArraySchema(schema = @Schema(implementation = ResponseModel.class))
                             )
                     },
-                    description = "Не найдено групп для выбранного направления подготовки"),
-
-            @ApiResponse(responseCode = "200", content = {
-                    @Content(
-                            mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Group.class))
-                    )
-            })
+                    description = Constants.NOT_FOUND_DIRECTION_WITH_ID
+            ),
+            @ApiResponse(
+                    responseCode = "200",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = Group.class))
+                            )
+                    }
+            )
     })
     List<Group> getGroupsByDirectionId(@PathVariable String directionId);
 }

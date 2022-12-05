@@ -4,6 +4,7 @@ import ksutimetable.constants.Constants;
 import ksutimetable.entities.Group;
 import ksutimetable.exceptions.KsuTimetableException;
 import ksutimetable.repositories.GroupRepository;
+import ksutimetable.services.DirectionService;
 import ksutimetable.services.GroupService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import java.util.List;
 public class GroupServiceImpl implements GroupService {
 
     private final GroupRepository groupRepository;
+    private final DirectionService directionService;
 
     @Override
     public void saveGroups(List<Group> groups) {
@@ -24,9 +26,9 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public Group getByGroupName(String groupName) {
+    public Group getGroupByName(String groupName) {
         var groupOpt = groupRepository.findGroupByTitle(groupName);
-        if (groupOpt.isPresent()){
+        if (groupOpt.isPresent()) {
             return groupOpt.get();
         } else {
             var message = String.format(Constants.NOT_FOUND_GROUP_WITH_NAME, groupName);
@@ -38,5 +40,11 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public List<Group> getGroups() {
         return groupRepository.findAll();
+    }
+
+    @Override
+    public List<Group> getGroupsByDirectionId(String directionId) {
+        var direction = directionService.getDirectionById(directionId);
+        return groupRepository.findAllByDirection(direction);
     }
 }

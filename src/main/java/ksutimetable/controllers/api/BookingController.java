@@ -6,28 +6,26 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import ksutimetable.constants.Constants;
 import ksutimetable.models.ResponseModel;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
-public interface InteractionControllerApi {
+@Tag(name = "Booking controller", description = "Контроллер бронирования аудиторий")
+public interface BookingController {
 
+    /**
+     * Эндпоинт для бронирования аудитории для занятия
+     *
+     * @param cabinetId Id аудитории для бронирования
+     * @param userId    Id пользователя, который бронирует аудиторию
+     * @return {@link ResponseModel} Результат бронирования аудитории
+     */
     @GetMapping("/{cabinetId}/{userId}")
-    @Operation(summary = "Взятие аудитории")
+    @Operation(summary = "Взять аудиторию для занятия")
     @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "404",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = ResponseModel.class))
-                            )
-                    },
-                    description = "Не существует такого пользователя, Не существует такой аудитории"
-            ),
-
             @ApiResponse(
                     responseCode = "200",
                     content = {
@@ -37,24 +35,18 @@ public interface InteractionControllerApi {
                             )
                     },
                     description = "Вы успешно успешно взяли аудиторию"
-            ),
-
-            @ApiResponse(
-                    responseCode = "409",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = ResponseModel.class))
-                            )
-                    },
-                    description = "Конфликтные ошибки"
             )
     })
-    ResponseModel getCabinetForActivity(@PathVariable String cabinetId,
-                                        @PathVariable String userId);
+    ResponseModel getCabinetForActivity(@PathVariable String cabinetId, @PathVariable String userId);
 
+    /**
+     * Эндпоинт для возрата аудитории после занятия
+     *
+     * @param cabinetId Id кабинета для возрата
+     * @return {@link ResponseModel} Результат возврата
+     */
     @PutMapping("/{cabinetId}")
-    @Operation(summary = "Возврат аудитории")
+    @Operation(summary = "Освободить аудиторию после занятия")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -64,9 +56,8 @@ public interface InteractionControllerApi {
                                     array = @ArraySchema(schema = @Schema(implementation = ResponseModel.class))
                             )
                     },
-                    description = "Вы освободили аудиторию"
+                    description = Constants.CABINET_SUCCESSFULLY_FREED
             ),
-
             @ApiResponse(
                     responseCode = "404",
                     content = {
@@ -76,17 +67,6 @@ public interface InteractionControllerApi {
                             )
                     },
                     description = Constants.NOT_FOUND_CABINET_WITH_ID
-            ),
-
-            @ApiResponse(
-                    responseCode = "409",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = ResponseModel.class))
-                            )
-                    },
-                    description = "Конфликтные ошибки"
             )
     })
     ResponseModel returnCabinetFromActivity(@PathVariable String cabinetId);

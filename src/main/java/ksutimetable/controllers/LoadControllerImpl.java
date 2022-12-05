@@ -1,6 +1,6 @@
 package ksutimetable.controllers;
 
-import ksutimetable.controllers.api.LoadControllerApi;
+import ksutimetable.controllers.api.LoadController;
 import ksutimetable.models.ResponseModel;
 import ksutimetable.services.LoadService;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/load")
 @AllArgsConstructor
-public class LoadDataController implements LoadControllerApi {
+public class LoadControllerImpl implements LoadController {
 
     private final LoadService loadService;
 

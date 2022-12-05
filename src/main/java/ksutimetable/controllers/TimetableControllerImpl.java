@@ -1,6 +1,6 @@
 package ksutimetable.controllers;
 
-import ksutimetable.controllers.api.TimetableControllerApi;
+import ksutimetable.controllers.api.TimetableController;
 import ksutimetable.entities.Timetable;
 import ksutimetable.services.impl.TimetableServiceImpl;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/timetable")
 @AllArgsConstructor
-public class TimetableController implements TimetableControllerApi {
+public class TimetableControllerImpl implements TimetableController {
 
     private final TimetableServiceImpl timetableServiceImpl;
 
