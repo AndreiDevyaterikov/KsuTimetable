@@ -4,7 +4,8 @@ import ksutimetable.entities.*;
 import ksutimetable.models.TimetableResponseModel;
 import ksutimetable.services.RequestService;
 import ksutimetable.utils.MapperService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -14,8 +15,11 @@ import java.util.List;
 
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
+
+    @Value("${timetable.uri}")
+    private String uri;
 
     private final WebClient client;
 
@@ -89,7 +93,7 @@ public class RequestServiceImpl implements RequestService {
     private String executePostRequest(MultiValueMap<String, String> requestParams) {
         return client
                 .post()
-                .uri("timetable.php")
+                .uri(uri)
                 .bodyValue(requestParams)
                 .retrieve()
                 .bodyToMono(String.class)
