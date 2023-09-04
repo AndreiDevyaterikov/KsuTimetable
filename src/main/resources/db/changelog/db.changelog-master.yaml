@@ -1,0 +1,6 @@
+databaseChangeLog:
+  - include:
+      file: 'CreateTableScripts.sql'
+  - include:
+      file: 'Procedures.sql'
+
