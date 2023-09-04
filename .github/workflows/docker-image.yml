@@ -7,19 +7,33 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-    name: Build and deploy
+  database:
     runs-on: ubuntu-latest
-
     services:
-      db:
+      postgres:
         image: postgres
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: root
           POSTGRES_DB: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         ports:
           - 5432:5432
+  
+  backend:
+    needs: database
+    name: Build and run backend
+    runs-on: ubuntu-latest
+
+    services:
+      env:
+        SERVER_PORT=8182
+        SPRING_DATASOURCE_URL=jdbc:postgresql://database/postgres
+        DB_HOST = database
     steps:
     - name: Clone repository
       uses: actions/checkout@v3
