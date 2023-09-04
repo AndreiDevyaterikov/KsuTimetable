@@ -40,5 +40,5 @@ jobs:
         publish_dir: ./build/libs
 
     - name: Run project
-      run: java -jar ./build/libs/*.jar
+      run: java -jar ./build/libs/KsuTimetable-1.0.0.jar
   
