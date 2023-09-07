@@ -20,8 +20,7 @@ public class RestTemplateConfig {
     @Bean
     public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
-        UriTemplateHandler uriTemplateHandler = new DefaultUriBuilderFactory(defaultUri);
-        restTemplate.setUriTemplateHandler(uriTemplateHandler);
+        restTemplate.setUriTemplateHandler(getTemplateHandler());
         restTemplate.getMessageConverters().add(getJackson2Converter());
         return restTemplate;
     }
@@ -30,5 +29,9 @@ public class RestTemplateConfig {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         converter.setSupportedMediaTypes(Collections.singletonList(MediaType.TEXT_HTML));
         return converter;
+    }
+
+    private UriTemplateHandler getTemplateHandler() {
+        return new DefaultUriBuilderFactory(defaultUri);
     }
 }
