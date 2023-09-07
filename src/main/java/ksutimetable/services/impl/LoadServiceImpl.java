@@ -9,7 +9,11 @@ import ksutimetable.models.ResponseModel;
 import ksutimetable.services.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.CountDownLatch;
 
 @Slf4j
 @Service
@@ -17,6 +21,7 @@ import org.springframework.stereotype.Service;
 public class LoadServiceImpl implements LoadService {
 
     private final RequestService requestService;
+
     private final BuildingService buildingService;
     private final CabinetService cabinetService;
     private final UserService userService;
@@ -25,88 +30,85 @@ public class LoadServiceImpl implements LoadService {
     private final GroupService groupService;
     private final TimetableService timetableService;
 
+    @Qualifier("taskPoolConfig")
+    private final ThreadPoolTaskExecutor taskExecutor;
+
     @Override
     public ResponseModel loadData() {
 
+        CountDownLatch threadLatch = new CountDownLatch(3);
+
         log.info("Started loading data");
 
-        loadBuildings();
-        loadUsers();
-        loadFaculties();
+        taskExecutor.execute(() -> {
+            try {
+                log.info("{} started", Thread.currentThread().getName());
+                loadBuildings();
+                log.info("{} finished", Thread.currentThread().getName());
+            } finally {
+                threadLatch.countDown();
+            }
+        });
 
-        log.info("Finished loading data");
+        taskExecutor.execute(() -> {
+            try {
+                log.info("{} started", Thread.currentThread().getName());
+                loadUsers();
+                log.info("{} finished", Thread.currentThread().getName());
+            } finally {
+                threadLatch.countDown();
+            }
+        });
 
-        return new ResponseModel(200, Constants.DATA_HAS_BEEN_LOADED);
+        taskExecutor.execute(() -> {
+            try {
+                log.info("{} started", Thread.currentThread().getName());
+                loadFaculties();
+                log.info("{} finished", Thread.currentThread().getName());
+            } finally {
+                threadLatch.countDown();
+            }
+        });
+
+        try {
+            threadLatch.await();
+            log.info("Finished loading data");
+            return new ResponseModel(200, Constants.DATA_HAS_BEEN_LOADED);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void loadBuildings() {
-        log.info("Start loading buildings");
-        requestService.getBuildingsRequest()
-                .doOnComplete(() -> log.info("All buildings has been loaded"))
-                .subscribe(building -> {
-                    buildingService.saveBuilding(building);
-                    loadCabinets(building);
-                });
+        requestService.getBuildings().forEach(building -> {
+            buildingService.saveBuilding(building);
+            loadCabinets(building);
+        });
     }
 
     private void loadCabinets(Building building) {
-
-        var buildingName = building.getTitle();
-
-        log.info(
-                String.format(
-                        "Start loading cabinets for building %s",
-                        buildingName
-                )
-        );
-        requestService.getCabinetsByBuildingRequest(building.getId())
-                .doOnComplete(() -> log.info(
-                        String.format(
-                                "All cabinets for building %s has been loaded",
-                                buildingName
-                        )
-                ))
-                .subscribe(cabinet -> {
+        requestService.getCabinetsByBuilding(building.getId())
+                .forEach(cabinet -> {
                     cabinet.setBuilding(building);
                     cabinetService.saveCabinet(cabinet);
                 });
     }
 
     private void loadUsers() {
-        log.info("Start loading users");
-        requestService.getUsersRequest()
-                .doOnComplete(() -> log.info("All users has been loaded"))
-                .subscribe(userService::saveUser);
+        requestService.getUsers().forEach(userService::saveUser);
     }
 
     private void loadFaculties() {
-        log.info("Start loading faculties");
-        requestService.getFacultiesRequest()
-                .doOnComplete(() -> log.info("All faculties has been loaded"))
-                .subscribe(faculty -> {
+        requestService.getFaculties()
+                .forEach(faculty -> {
                     facultyService.saveFaculty(faculty);
                     loadDirections(faculty);
                 });
     }
 
     private void loadDirections(Faculty faculty) {
-
-        var facultyName = faculty.getTitle();
-
-        log.info(
-                String.format(
-                        "Start loading directions for faculty %s",
-                        facultyName
-                )
-        );
-        requestService.getDirectionsByFacultyRequest(faculty.getId())
-                .doOnComplete(() -> log.info(
-                        String.format(
-                                "All directions for faculty %s has been loaded",
-                                facultyName
-                        )
-                ))
-                .subscribe(direction -> {
+        requestService.getDirectionsByFaculty(faculty.getId())
+                .forEach(direction -> {
                     direction.setFaculty(faculty);
                     directionService.saveDirection(direction);
                     loadGroups(direction);
@@ -114,23 +116,8 @@ public class LoadServiceImpl implements LoadService {
     }
 
     private void loadGroups(Direction direction) {
-
-        var directionName = direction.getTitle();
-
-        log.info(
-                String.format(
-                        "Start loading groups for direction %s",
-                        directionName
-                )
-        );
-        requestService.getGroupByDirectionRequest(direction.getId())
-                .doOnComplete(() -> log.info(
-                        String.format(
-                                "All groups for direction %s has been loaded",
-                                directionName
-                        )
-                ))
-                .subscribe(group -> {
+        requestService.getGroupByDirection(direction.getId())
+                .forEach(group -> {
                     group.setDirection(direction);
                     groupService.saveGroup(group);
                     loadTimetables(group);
@@ -139,22 +126,8 @@ public class LoadServiceImpl implements LoadService {
 
     private void loadTimetables(Group group) {
 
-        var groupName = group.getTitle();
-
-        log.info(
-                String.format(
-                        "Start loading timetable for group %s",
-                        groupName
-                )
-        );
-        requestService.getTimetableByGroupRequest(group.getId())
-                .doOnComplete(() -> log.info(
-                        String.format(
-                                "All lessons for group %s has been loaded",
-                                groupName
-                        )
-                ))
-                .subscribe(timetable -> {
+        requestService.getTimetableByGroup(group.getId())
+                .forEach(timetable -> {
                     timetable.setGroup(group);
                     timetableService.saveLesson(timetable);
                 });

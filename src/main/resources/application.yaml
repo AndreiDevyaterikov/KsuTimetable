@@ -1,6 +1,7 @@
 springdoc:
   swagger-ui:
-    path: /ksu-timetable-api.html
+    path: /ksu.html
+
 spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -16,6 +17,7 @@ spring:
 
 server:
   port: 8082
+
 timetable:
   url: "https://ksu.edu.ru/timetable/2022_2/"
-  uri: "timetable.php"
+  resource: "timetable.php"

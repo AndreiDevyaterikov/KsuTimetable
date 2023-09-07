@@ -1,17 +1,21 @@
 package ksutimetable.services.impl;
 
 import ksutimetable.entities.*;
-import ksutimetable.exceptions.KsuTimetableException;
 import ksutimetable.models.TimetableResponseModel;
 import ksutimetable.services.RequestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.Arrays;
+import java.util.List;
 
 
 @Slf4j
@@ -19,80 +23,78 @@ import reactor.core.publisher.Flux;
 @RequiredArgsConstructor
 public class RequestServiceImpl implements RequestService {
 
-    @Value("${timetable.uri}")
-    private String uri;
+    @Value("${timetable.resource}")
+    private String resource;
 
-    private final WebClient client;
+    private final RestTemplate restTemplate;
 
     @Override
-    public Flux<Building> getBuildingsRequest() {
+    public List<Building> getBuildings() {
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("action", "getbuildings");
-        return executePostRequest(Building.class, requestParams);
+        var response = postRequest(requestParams, Building[].class);
+        return Arrays.stream(response).toList();
     }
 
     @Override
-    public Flux<Faculty> getFacultiesRequest() {
+    public List<Faculty> getFaculties() {
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("action", "getfaculties");
-        return executePostRequest(Faculty.class, requestParams);
+        var response = postRequest(requestParams, Faculty[].class);
+        return Arrays.stream(response).toList();
     }
 
     @Override
-    public Flux<User> getUsersRequest() {
+    public List<User> getUsers() {
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("action", "getteachers");
-        return executePostRequest(User.class, requestParams);
+        var response = postRequest(requestParams, User[].class);
+        return Arrays.stream(response).toList();
     }
 
     @Override
-    public Flux<Cabinet> getCabinetsByBuildingRequest(String buildingId) {
+    public List<Cabinet> getCabinetsByBuilding(String buildingId) {
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("action", "getauds");
         requestParams.add("id", buildingId);
-        return executePostRequest(Cabinet.class, requestParams);
+        var response = postRequest(requestParams, Cabinet[].class);
+        return Arrays.stream(response).toList();
     }
 
     @Override
-    public Flux<Direction> getDirectionsByFacultyRequest(String facultyId) {
+    public List<Direction> getDirectionsByFaculty(String facultyId) {
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("action", "getbranches");
         requestParams.add("id", facultyId);
-        return executePostRequest(Direction.class, requestParams);
+        var response = postRequest(requestParams, Direction[].class);
+        return Arrays.stream(response).toList();
     }
 
     @Override
-    public Flux<Group> getGroupByDirectionRequest(String directionId) {
+    public List<Group> getGroupByDirection(String directionId) {
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("action", "getgroups");
         requestParams.add("id", directionId);
-        return executePostRequest(Group.class, requestParams);
+        var response = postRequest(requestParams, Group[].class);
+        return Arrays.stream(response).toList();
     }
 
     @Override
-    public Flux<TimetableResponseModel> getTimetableByGroupRequest(String groupId) {
+    public List<TimetableResponseModel> getTimetableByGroup(String groupId) {
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("action", "gettimetable");
         requestParams.add("mode", "student");
         requestParams.add("id", groupId);
-        return executePostRequest(TimetableResponseModel.class, requestParams);
+        var response = postRequest(requestParams, TimetableResponseModel[].class);
+        return Arrays.stream(response).toList();
     }
 
-    private <T> Flux<T> executePostRequest(Class<T> model, MultiValueMap<String, String> requestParams) {
-        return client
-                .post()
-                .uri(uri)
-                .bodyValue(requestParams)
-                .retrieve()
-                .bodyToFlux(model)
-                .doOnError(throwable -> {
-                    log.error(throwable.getMessage());
-                    var message = String.format(
-                            "Error download on %s with params %s",
-                            model.getSimpleName(),
-                            requestParams
-                    );
-                    throw new KsuTimetableException(message, 500);
-                });
+    private <T> T postRequest(MultiValueMap<String, String> requestParams, Class<T> typeResponse) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestParams, headers);
+
+        return restTemplate.postForObject(resource, requestEntity, typeResponse);
     }
 }
