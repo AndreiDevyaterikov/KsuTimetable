@@ -91,10 +91,15 @@ public class RequestServiceImpl implements RequestService {
 
     private <T> T postRequest(MultiValueMap<String, String> requestParams, Class<T> typeResponse) {
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpHeaders headers = getHttpHeaders();
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestParams, headers);
 
         return restTemplate.postForObject(resource, requestEntity, typeResponse);
+    }
+
+    private static HttpHeaders getHttpHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        return headers;
     }
 }

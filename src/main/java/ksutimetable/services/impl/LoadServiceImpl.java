@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.CountDownLatch;
 
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class LoadServiceImpl implements LoadService {
     @Override
     public ResponseModel loadData() {
 
-        CountDownLatch threadLatch = new CountDownLatch(3);
+        CountDownLatch threadLatch = new CountDownLatch(2);
 
         log.info("Started loading data");
 
@@ -60,18 +61,10 @@ public class LoadServiceImpl implements LoadService {
             }
         });
 
-        taskExecutor.execute(() -> {
-            try {
-                log.info("{} started", Thread.currentThread().getName());
-                loadFaculties();
-                log.info("{} finished", Thread.currentThread().getName());
-            } finally {
-                threadLatch.countDown();
-            }
-        });
 
         try {
             threadLatch.await();
+            loadFaculties();
             log.info("Finished loading data");
             return new ResponseModel(200, Constants.DATA_HAS_BEEN_LOADED);
         } catch (InterruptedException e) {
@@ -88,6 +81,8 @@ public class LoadServiceImpl implements LoadService {
 
     private void loadCabinets(Building building) {
         requestService.getCabinetsByBuilding(building.getId())
+                .stream()
+                .filter(cabinet -> cabinet.getTitle().contains(building.getTitle()))
                 .forEach(cabinet -> {
                     cabinet.setBuilding(building);
                     cabinetService.saveCabinet(cabinet);
@@ -99,11 +94,32 @@ public class LoadServiceImpl implements LoadService {
     }
 
     private void loadFaculties() {
-        requestService.getFaculties()
-                .forEach(faculty -> {
-                    facultyService.saveFaculty(faculty);
-                    loadDirections(faculty);
-                });
+
+        var faculties = requestService.getFaculties();
+        CountDownLatch threadLatch = new CountDownLatch(faculties.size());
+
+        for (int indexThread = 0; indexThread < faculties.size(); indexThread++) {
+
+            int finalIndexThread = indexThread;
+            taskExecutor.execute(() -> {
+               try {
+                   log.info("{} started", Thread.currentThread().getName());
+
+                   var faculty = faculties.get(finalIndexThread);
+                   facultyService.saveFaculty(faculty);
+                   loadDirections(faculty);
+               } finally {
+                   threadLatch.countDown();
+                   log.info("{} finished", Thread.currentThread().getName());
+               }
+            });
+        }
+
+        try {
+            threadLatch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void loadDirections(Faculty faculty) {
