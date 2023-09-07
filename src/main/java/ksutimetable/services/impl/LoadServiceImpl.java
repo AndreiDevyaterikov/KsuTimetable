@@ -43,21 +43,21 @@ public class LoadServiceImpl implements LoadService {
 
         taskExecutor.execute(() -> {
             try {
-                log.info("{} started", Thread.currentThread().getName());
+                log.info("Load buildings with cabinets started");
                 loadBuildings();
-                log.info("{} finished", Thread.currentThread().getName());
             } finally {
                 threadLatch.countDown();
+                log.info("Load buildings with cabinets finished");
             }
         });
 
         taskExecutor.execute(() -> {
             try {
-                log.info("{} started", Thread.currentThread().getName());
+                log.info("Load users started");
                 loadUsers();
-                log.info("{} finished", Thread.currentThread().getName());
             } finally {
                 threadLatch.countDown();
+                log.info("Load users finished");
             }
         });
 
@@ -65,6 +65,7 @@ public class LoadServiceImpl implements LoadService {
         try {
             threadLatch.await();
             loadFaculties();
+            Thread.sleep(5); //Дождаться отображения лога в последнем потоке в loadFaculties()
             log.info("Finished loading data");
             return new ResponseModel(200, Constants.DATA_HAS_BEEN_LOADED);
         } catch (InterruptedException e) {
@@ -103,14 +104,13 @@ public class LoadServiceImpl implements LoadService {
             int finalIndexThread = indexThread;
             taskExecutor.execute(() -> {
                try {
-                   log.info("{} started", Thread.currentThread().getName());
-
                    var faculty = faculties.get(finalIndexThread);
+                   log.info("Loading data for {} started", faculty.getTitle());
                    facultyService.saveFaculty(faculty);
                    loadDirections(faculty);
                } finally {
                    threadLatch.countDown();
-                   log.info("{} finished", Thread.currentThread().getName());
+                   log.info("Loading data for {} finished", faculties.get(finalIndexThread).getTitle());
                }
             });
         }
