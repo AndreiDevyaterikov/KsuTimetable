@@ -71,7 +71,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<Group> getGroupByDirection(String directionId) {
+    public List<Group> getGroupsByDirection(String directionId) {
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("action", "getgroups");
         requestParams.add("id", directionId);
@@ -80,7 +80,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<TimetableResponseModel> getTimetableByGroup(String groupId) {
+    public List<TimetableResponseModel> getLessonsByGroup(String groupId) {
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("action", "gettimetable");
         requestParams.add("mode", "student");

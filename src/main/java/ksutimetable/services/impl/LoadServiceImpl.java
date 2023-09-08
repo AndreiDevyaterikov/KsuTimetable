@@ -74,10 +74,26 @@ public class LoadServiceImpl implements LoadService {
     }
 
     private void loadBuildings() {
-        requestService.getBuildings().forEach(building -> {
-            buildingService.saveBuilding(building);
-            loadCabinets(building);
-        });
+
+        var buildings = requestService.getBuildings();
+
+        CountDownLatch threadLatch = new CountDownLatch(buildings.size());
+
+        for (int indexThread = 0; indexThread < buildings.size(); indexThread++) {
+            int finalIndexThread = indexThread;
+
+            taskExecutor.execute(() -> {
+                try{
+                    var building = buildings.get(finalIndexThread);
+                    log.info("Started loading cabinets for {}", building.getTitle());
+                    buildingService.saveBuilding(building);
+                    loadCabinets(building);
+                } finally {
+                    threadLatch.countDown();
+                    log.info("Finished loading cabinets for {}", buildings.get(finalIndexThread).getTitle());
+                }
+            });
+        }
     }
 
     private void loadCabinets(Building building) {
@@ -132,17 +148,17 @@ public class LoadServiceImpl implements LoadService {
     }
 
     private void loadGroups(Direction direction) {
-        requestService.getGroupByDirection(direction.getId())
+        requestService.getGroupsByDirection(direction.getId())
                 .forEach(group -> {
                     group.setDirection(direction);
                     groupService.saveGroup(group);
-                    loadTimetables(group);
+                    loadLessons(group);
                 });
     }
 
-    private void loadTimetables(Group group) {
+    private void loadLessons(Group group) {
 
-        requestService.getTimetableByGroup(group.getId())
+        requestService.getLessonsByGroup(group.getId())
                 .forEach(timetable -> {
                     timetable.setGroup(group);
                     timetableService.saveLesson(timetable);

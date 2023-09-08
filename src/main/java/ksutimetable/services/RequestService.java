@@ -17,7 +17,7 @@ public interface RequestService {
 
     List<Direction> getDirectionsByFaculty(String facultyId);
 
-    List<Group> getGroupByDirection(String directionId);
+    List<Group> getGroupsByDirection(String directionId);
 
-    List<TimetableResponseModel> getTimetableByGroup(String groupId);
+    List<TimetableResponseModel> getLessonsByGroup(String groupId);
 }
