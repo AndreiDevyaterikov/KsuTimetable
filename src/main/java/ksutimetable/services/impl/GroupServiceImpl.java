@@ -21,24 +21,8 @@ public class GroupServiceImpl implements GroupService {
     private final DirectionService directionService;
 
     @Override
-    public void saveGroups(List<Group> groups) {
-        groupRepository.saveAll(groups);
-    }
-
-    @Override
     public void saveGroup(Group group) {
         groupRepository.save(group);
-    }
-
-    @Override
-    public Group getGroupByName(String groupName) {
-        return groupRepository
-                .findGroupByTitle(groupName)
-                .orElseThrow(() -> {
-                    var message = String.format(Constants.NOT_FOUND_GROUP_WITH_NAME, groupName);
-                    log.info(message);
-                    return new KsuTimetableException(message, 404);
-                });
     }
 
     @Override
@@ -50,11 +34,6 @@ public class GroupServiceImpl implements GroupService {
                     log.info(message);
                     return new KsuTimetableException(message, 404);
                 });
-    }
-
-    @Override
-    public List<Group> getGroups() {
-        return groupRepository.findAll();
     }
 
     @Override

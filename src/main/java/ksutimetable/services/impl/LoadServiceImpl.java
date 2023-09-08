@@ -9,7 +9,6 @@ import ksutimetable.models.ResponseModel;
 import ksutimetable.services.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +30,6 @@ public class LoadServiceImpl implements LoadService {
     private final GroupService groupService;
     private final TimetableService timetableService;
 
-    @Qualifier("taskPoolConfig")
     private final ThreadPoolTaskExecutor taskExecutor;
 
     @Override
@@ -43,29 +41,27 @@ public class LoadServiceImpl implements LoadService {
 
         taskExecutor.execute(() -> {
             try {
-                log.info("Load buildings with cabinets started");
-                loadBuildings();
+                log.info("Load users started");
+                loadUsers();
             } finally {
+                log.info("Load users finished");
                 threadLatch.countDown();
-                log.info("Load buildings with cabinets finished");
             }
         });
 
         taskExecutor.execute(() -> {
             try {
-                log.info("Load users started");
-                loadUsers();
+                log.info("Load buildings with cabinets started");
+                loadBuildings();
             } finally {
+                log.info("Load buildings with cabinets finished");
                 threadLatch.countDown();
-                log.info("Load users finished");
             }
         });
-
 
         try {
             threadLatch.await();
             loadFaculties();
-            Thread.sleep(5); //Дождаться отображения лога в последнем потоке в loadFaculties()
             log.info("Finished loading data");
             return new ResponseModel(200, Constants.DATA_HAS_BEEN_LOADED);
         } catch (InterruptedException e) {
@@ -83,16 +79,22 @@ public class LoadServiceImpl implements LoadService {
             int finalIndexThread = indexThread;
 
             taskExecutor.execute(() -> {
-                try{
+                try {
                     var building = buildings.get(finalIndexThread);
                     log.info("Started loading cabinets for {}", building.getTitle());
                     buildingService.saveBuilding(building);
                     loadCabinets(building);
                 } finally {
-                    threadLatch.countDown();
                     log.info("Finished loading cabinets for {}", buildings.get(finalIndexThread).getTitle());
+                    threadLatch.countDown();
                 }
             });
+        }
+
+        try {
+            threadLatch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -119,15 +121,15 @@ public class LoadServiceImpl implements LoadService {
 
             int finalIndexThread = indexThread;
             taskExecutor.execute(() -> {
-               try {
-                   var faculty = faculties.get(finalIndexThread);
-                   log.info("Loading data for {} started", faculty.getTitle());
-                   facultyService.saveFaculty(faculty);
-                   loadDirections(faculty);
-               } finally {
-                   threadLatch.countDown();
-                   log.info("Loading data for {} finished", faculties.get(finalIndexThread).getTitle());
-               }
+                try {
+                    var faculty = faculties.get(finalIndexThread);
+                    log.info("Loading data for {} started", faculty.getTitle());
+                    facultyService.saveFaculty(faculty);
+                    loadDirections(faculty);
+                } finally {
+                    log.info("Loading data for {} finished", faculties.get(finalIndexThread).getTitle());
+                    threadLatch.countDown();
+                }
             });
         }
 
@@ -157,7 +159,6 @@ public class LoadServiceImpl implements LoadService {
     }
 
     private void loadLessons(Group group) {
-
         requestService.getLessonsByGroup(group.getId())
                 .forEach(timetable -> {
                     timetable.setGroup(group);

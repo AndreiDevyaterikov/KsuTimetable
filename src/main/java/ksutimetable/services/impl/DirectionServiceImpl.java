@@ -21,18 +21,8 @@ public class DirectionServiceImpl implements DirectionService {
     private final FacultyService facultyService;
 
     @Override
-    public void saveDirections(List<Direction> directions) {
-        directionRepository.saveAll(directions);
-    }
-
-    @Override
     public void saveDirection(Direction direction) {
         directionRepository.save(direction);
-    }
-
-    @Override
-    public List<Direction> getDirections() {
-        return directionRepository.findAll();
     }
 
     @Override
