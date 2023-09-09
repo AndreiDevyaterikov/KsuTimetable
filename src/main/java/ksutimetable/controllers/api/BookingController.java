@@ -16,13 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 @Tag(name = "Booking controller", description = "Контроллер бронирования аудиторий")
 public interface BookingController {
 
-    /**
-     * Эндпоинт для бронирования аудитории для занятия
-     *
-     * @param cabinetId Id аудитории для бронирования
-     * @param userId    Id пользователя, который бронирует аудиторию
-     * @return {@link ResponseModel} Результат бронирования аудитории
-     */
     @GetMapping("/{cabinetId}/{userId}")
     @Operation(summary = "Взять аудиторию для занятия")
     @ApiResponses(value = {
@@ -39,12 +32,6 @@ public interface BookingController {
     })
     ResponseModel getCabinetForActivity(@PathVariable String cabinetId, @PathVariable String userId);
 
-    /**
-     * Эндпоинт для возрата аудитории после занятия
-     *
-     * @param cabinetId Id кабинета для возрата
-     * @return {@link ResponseModel} Результат возврата
-     */
     @PutMapping("/{cabinetId}")
     @Operation(summary = "Освободить аудиторию после занятия")
     @ApiResponses(value = {
