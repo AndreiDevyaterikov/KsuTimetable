@@ -17,11 +17,6 @@ public class FacultyServiceImpl implements FacultyService {
     private final FacultyRepository facultyRepository;
 
     @Override
-    public void saveFaculties(List<Faculty> faculties) {
-        facultyRepository.saveAll(faculties);
-    }
-
-    @Override
     public void saveFaculty(Faculty faculty) {
         facultyRepository.save(faculty);
     }

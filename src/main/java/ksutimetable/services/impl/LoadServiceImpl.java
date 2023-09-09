@@ -9,7 +9,11 @@ import ksutimetable.models.ResponseModel;
 import ksutimetable.services.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.CountDownLatch;
+
 
 @Slf4j
 @Service
@@ -17,6 +21,7 @@ import org.springframework.stereotype.Service;
 public class LoadServiceImpl implements LoadService {
 
     private final RequestService requestService;
+
     private final BuildingService buildingService;
     private final CabinetService cabinetService;
     private final UserService userService;
@@ -25,88 +30,119 @@ public class LoadServiceImpl implements LoadService {
     private final GroupService groupService;
     private final TimetableService timetableService;
 
+    private final ThreadPoolTaskExecutor taskExecutor;
+
     @Override
     public ResponseModel loadData() {
 
+        CountDownLatch threadLatch = new CountDownLatch(2);
+
         log.info("Started loading data");
 
-        loadBuildings();
-        loadUsers();
-        loadFaculties();
+        taskExecutor.execute(() -> {
+            try {
+                log.info("Load users started");
+                loadUsers();
+            } finally {
+                log.info("Load users finished");
+                threadLatch.countDown();
+            }
+        });
 
-        log.info("Finished loading data");
+        taskExecutor.execute(() -> {
+            try {
+                log.info("Load buildings with cabinets started");
+                loadBuildings();
+            } finally {
+                log.info("Load buildings with cabinets finished");
+                threadLatch.countDown();
+            }
+        });
 
-        return new ResponseModel(200, Constants.DATA_HAS_BEEN_LOADED);
+        try {
+            threadLatch.await();
+            loadFaculties();
+            log.info("Finished loading data");
+            return new ResponseModel(200, Constants.DATA_HAS_BEEN_LOADED);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void loadBuildings() {
-        log.info("Start loading buildings");
-        requestService.getBuildingsRequest()
-                .doOnComplete(() -> log.info("All buildings has been loaded"))
-                .subscribe(building -> {
+
+        var buildings = requestService.getBuildings();
+
+        CountDownLatch threadLatch = new CountDownLatch(buildings.size());
+
+        for (int indexThread = 0; indexThread < buildings.size(); indexThread++) {
+            int finalIndexThread = indexThread;
+
+            taskExecutor.execute(() -> {
+                try {
+                    var building = buildings.get(finalIndexThread);
+                    log.info("Started loading cabinets for {}", building.getTitle());
                     buildingService.saveBuilding(building);
                     loadCabinets(building);
-                });
+                } finally {
+                    log.info("Finished loading cabinets for {}", buildings.get(finalIndexThread).getTitle());
+                    threadLatch.countDown();
+                }
+            });
+        }
+
+        try {
+            threadLatch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void loadCabinets(Building building) {
-
-        var buildingName = building.getTitle();
-
-        log.info(
-                String.format(
-                        "Start loading cabinets for building %s",
-                        buildingName
-                )
-        );
-        requestService.getCabinetsByBuildingRequest(building.getId())
-                .doOnComplete(() -> log.info(
-                        String.format(
-                                "All cabinets for building %s has been loaded",
-                                buildingName
-                        )
-                ))
-                .subscribe(cabinet -> {
+        requestService.getCabinetsByBuilding(building.getId())
+                .stream()
+                .filter(cabinet -> cabinet.getTitle().contains(building.getTitle()))
+                .forEach(cabinet -> {
                     cabinet.setBuilding(building);
                     cabinetService.saveCabinet(cabinet);
                 });
     }
 
     private void loadUsers() {
-        log.info("Start loading users");
-        requestService.getUsersRequest()
-                .doOnComplete(() -> log.info("All users has been loaded"))
-                .subscribe(userService::saveUser);
+        requestService.getUsers().forEach(userService::saveUser);
     }
 
     private void loadFaculties() {
-        log.info("Start loading faculties");
-        requestService.getFacultiesRequest()
-                .doOnComplete(() -> log.info("All faculties has been loaded"))
-                .subscribe(faculty -> {
+
+        var faculties = requestService.getFaculties();
+        CountDownLatch threadLatch = new CountDownLatch(faculties.size());
+
+        for (int indexThread = 0; indexThread < faculties.size(); indexThread++) {
+
+            int finalIndexThread = indexThread;
+            taskExecutor.execute(() -> {
+                try {
+                    var faculty = faculties.get(finalIndexThread);
+                    log.info("Loading data for {} started", faculty.getTitle());
                     facultyService.saveFaculty(faculty);
                     loadDirections(faculty);
-                });
+                } finally {
+                    log.info("Loading data for {} finished", faculties.get(finalIndexThread).getTitle());
+                    threadLatch.countDown();
+                }
+            });
+        }
+
+        try {
+            threadLatch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void loadDirections(Faculty faculty) {
-
-        var facultyName = faculty.getTitle();
-
-        log.info(
-                String.format(
-                        "Start loading directions for faculty %s",
-                        facultyName
-                )
-        );
-        requestService.getDirectionsByFacultyRequest(faculty.getId())
-                .doOnComplete(() -> log.info(
-                        String.format(
-                                "All directions for faculty %s has been loaded",
-                                facultyName
-                        )
-                ))
-                .subscribe(direction -> {
+        requestService.getDirectionsByFaculty(faculty.getId())
+                .forEach(direction -> {
                     direction.setFaculty(faculty);
                     directionService.saveDirection(direction);
                     loadGroups(direction);
@@ -114,47 +150,17 @@ public class LoadServiceImpl implements LoadService {
     }
 
     private void loadGroups(Direction direction) {
-
-        var directionName = direction.getTitle();
-
-        log.info(
-                String.format(
-                        "Start loading groups for direction %s",
-                        directionName
-                )
-        );
-        requestService.getGroupByDirectionRequest(direction.getId())
-                .doOnComplete(() -> log.info(
-                        String.format(
-                                "All groups for direction %s has been loaded",
-                                directionName
-                        )
-                ))
-                .subscribe(group -> {
+        requestService.getGroupsByDirection(direction.getId())
+                .forEach(group -> {
                     group.setDirection(direction);
                     groupService.saveGroup(group);
-                    loadTimetables(group);
+                    loadLessons(group);
                 });
     }
 
-    private void loadTimetables(Group group) {
-
-        var groupName = group.getTitle();
-
-        log.info(
-                String.format(
-                        "Start loading timetable for group %s",
-                        groupName
-                )
-        );
-        requestService.getTimetableByGroupRequest(group.getId())
-                .doOnComplete(() -> log.info(
-                        String.format(
-                                "All lessons for group %s has been loaded",
-                                groupName
-                        )
-                ))
-                .subscribe(timetable -> {
+    private void loadLessons(Group group) {
+        requestService.getLessonsByGroup(group.getId())
+                .forEach(timetable -> {
                     timetable.setGroup(group);
                     timetableService.saveLesson(timetable);
                 });

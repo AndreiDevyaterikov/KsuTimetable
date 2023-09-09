@@ -1,6 +1,6 @@
 package ksutimetable.services.impl;
 
-import ksutimetable.entities.Cabinet;
+
 import ksutimetable.entities.Timetable;
 import ksutimetable.models.TimetableResponseModel;
 import ksutimetable.repositories.TimetableRepository;
@@ -42,30 +42,9 @@ public class TimetableServiceImpl implements TimetableService {
     }
 
     @Override
-    public void saveTimetables(List<TimetableResponseModel> timetables) {
-        var timetablesJson = MapperService.mapListToJsonString(timetables);
-        timetableRepository.addTimetable(timetablesJson);
-    }
-
-    @Override
     public void saveLesson(TimetableResponseModel lesson) {
         var lessonJson = MapperService.mapModelToJsonString(lesson);
         timetableRepository.saveLesson(lessonJson);
-    }
-
-    @Override
-    public List<Timetable> getTimetableByCabinetId(String cabinetId) {
-        return timetableRepository.findAllByCabinetId(cabinetId);
-    }
-
-    @Override
-    public Timetable getCurrentLessonByCabinetId(String cabinetId) {
-        return timetableRepository.getCurrentLessonByCabinetId(cabinetId);
-    }
-
-    @Override
-    public List<Timetable> getTodayLessonsByCabinet(Cabinet cabinet) {
-        return timetableRepository.getTodayLessonsInCabinet(cabinet.getId());
     }
 
     @Override

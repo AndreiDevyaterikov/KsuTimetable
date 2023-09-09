@@ -6,7 +6,6 @@ import ksutimetable.exceptions.KsuTimetableException;
 import ksutimetable.repositories.CabinetRepository;
 import ksutimetable.services.BuildingService;
 import ksutimetable.services.CabinetService;
-import ksutimetable.utils.MapperService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,12 +19,6 @@ public class CabinetServiceImpl implements CabinetService {
 
     private final CabinetRepository cabinetRepository;
     private final BuildingService buildingService;
-
-    @Override
-    public void saveCabinets(List<Cabinet> cabinets) {
-        var cabinetsJson = MapperService.mapListToJsonString(cabinets);
-        cabinetRepository.saveCabinets(cabinetsJson);
-    }
 
     @Override
     public void saveCabinet(Cabinet cabinet) {
