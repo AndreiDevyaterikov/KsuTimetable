@@ -1,5 +1,7 @@
 ## Ksu Audit Fund Accounting System
 
+## Deprecated - Not supported request URL for timetable
+
 ## Technologies
 * Gradle 7.5.1 version [Download Gradle](https://gradle.org/next-steps/?version=7.5.1&format=bin)
 * Java 17 version
