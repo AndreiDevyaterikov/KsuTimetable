@@ -1,6 +1,7 @@
 package ksutimetable.services.impl;
 
 import ksutimetable.entities.*;
+import ksutimetable.exceptions.KsuTimetableException;
 import ksutimetable.models.TimetableResponseModel;
 import ksutimetable.services.RequestService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
@@ -92,7 +94,11 @@ public class RequestServiceImpl implements RequestService {
     private <T> T postRequest(MultiValueMap<String, String> requestParams, Class<T> typeResponse) {
         HttpHeaders headers = getHttpHeaders();
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestParams, headers);
-        return restTemplate.postForObject(resource, requestEntity, typeResponse);
+        try {
+            return restTemplate.postForObject(resource, requestEntity, typeResponse);
+        } catch (HttpServerErrorException e) {
+            throw new KsuTimetableException(e.getLocalizedMessage(), e.getRawStatusCode());
+        }
     }
 
     private static HttpHeaders getHttpHeaders() {
